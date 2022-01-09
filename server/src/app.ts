@@ -1,11 +1,16 @@
-import express, { Application, Request, Response } from "express";
+import "express-async-errors";
+import loaders from "./loaders";
+import express, { Application } from "express";
+import config from "./config/index";
 
-const app: Application = express();
+const startServer = async () => {
+  const app: Application = express();
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Up and running!");
-});
+  await loaders({ expressApp: app });
 
-app.listen(3000, () => {
-  console.log("App is listening on port 3000!");
-});
+  app.listen(config.SERVER_PORT, () => {
+    console.log(`App is listening on port ${config.SERVER_PORT}`);
+  });
+};
+
+startServer();
