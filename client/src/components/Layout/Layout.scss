@@ -1,0 +1,15 @@
+.layout {
+  &__brand {
+    color: white !important;
+    height: 4rem;
+    margin-bottom: 0;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__content {
+    padding: 2rem;
+  }
+}
