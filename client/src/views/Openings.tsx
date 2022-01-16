@@ -1,11 +1,11 @@
 import React from "react";
-import Layout from "../components/Layout/Layout";
+import Dashboard from "../components/Layouts/Dashboard/Dashboard";
 
 const Openings: React.FC = () => {
   return (
-    <Layout>
+    <Dashboard>
       <h1>Main view</h1>
-    </Layout>
+    </Dashboard>
   );
 };
 

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Layout, Menu, Typography } from "antd";
 import { PieChartOutlined } from "@ant-design/icons";
-import "./Layout.scss";
+import "./Dashboard.scss";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
 
-const LayoutWrapper: React.FC = ({ children }) => {
+const Dashboard: React.FC = ({ children }) => {
   const [drawerCollapsed, setDrawerCollapsed] = useState(false);
 
   const toggleDrawerCollapsed = () => setDrawerCollapsed(!drawerCollapsed);
@@ -35,4 +35,4 @@ const LayoutWrapper: React.FC = ({ children }) => {
   );
 };
 
-export default LayoutWrapper;
+export default Dashboard;
