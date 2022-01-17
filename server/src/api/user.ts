@@ -5,10 +5,6 @@ import validateRequest from "../helpers/validateRequest";
 
 const user: Router = express.Router();
 
-user.get("/", (req: Request, res: Response) => {
-  res.send("User!");
-});
-
 user.post(
   "/signup",
   body("email").isEmail(),
@@ -31,7 +27,7 @@ user.post(
   }
 );
 
-user.get(
+user.post(
   "/login",
   body("email").isEmail().withMessage("Invalid e-mail."),
   body("password").exists().withMessage("You must provide password to login."),

@@ -9,7 +9,13 @@ import cookieParser from "cookie-parser";
 export default (app: Application) => {
   app.use(express.json());
   app.enable("trust proxy");
-  app.use(cors());
+
+  const corsConfig = {
+    origin: true,
+    credentials: true,
+  };
+
+  app.use(cors(corsConfig));
   app.use(morgan("dev"));
   app.use(cookieParser());
   app.use("/", router);

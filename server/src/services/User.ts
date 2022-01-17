@@ -38,8 +38,6 @@ class User {
   public login = async (email: string, password: string) => {
     const user = await UserModel.findOne({ email });
 
-    console.log(user);
-
     if (!user) {
       throw new UserNotFoundError();
     }

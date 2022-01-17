@@ -5,7 +5,7 @@ import JWT from "../services/JWT";
 
 const auth: Router = express.Router();
 
-auth.get(
+auth.post(
   "/refresh",
   cookie("Context").isString(),
   body("accessToken").isString(),
