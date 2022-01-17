@@ -1,23 +1,24 @@
 import React from "react";
-import { Input, Button, Typography } from "antd";
-import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import "./LoginForm.scss";
-import FormBlock from "../FormBlock/FormBlock";
-import { Formik, Form } from "formik";
+import "./SignupForm.scss";
 import * as Yup from "yup";
+import { Formik, Form } from "formik";
+import { Typography, Button, Input } from "antd";
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+import FormBlock from "../FormBlock/FormBlock";
 import FormError from "../FormError/FormError";
-import userStorage from "../../../storage/User";
-import { useNavigate, Link } from "react-router-dom";
 import FiftyFifty from "../../Layouts/FiftyFifty/FiftyFifty";
+import userStorage from "../../../storage/User";
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 
-interface LoginFormValues {
+interface SignupFormValues {
   email?: string;
   password?: string;
+  confirmPassword?: string;
 }
 
-const LoginSchema = Yup.object().shape({
+const SignupSchema = Yup.object().shape({
   email: Yup.string().email("Invalid e-mail.").required("Email is required."),
   password: Yup.string()
     .min(10, "Password must be at least 10 characters long.")
@@ -28,15 +29,19 @@ const LoginSchema = Yup.object().shape({
       /[!@#$%^&*(),.?":{}|<>~]/,
       "Password must contain at least one special character."
     ),
+  confirmPassword: Yup.string().oneOf(
+    [Yup.ref("password"), null],
+    "Passwords must match."
+  ),
 });
 
-const LoginForm: React.FC = () => {
+const SignupForm: React.FC = () => {
   const navigate = useNavigate();
 
-  const loginUser = async (values: LoginFormValues) => {
+  const signUpUser = async (values: SignupFormValues) => {
     try {
       const { email, password } = values;
-
+      await userStorage.signUp(email, password);
       const response = await userStorage.login(email, password);
       const { accessToken, refreshToken } = response.data;
 
@@ -51,17 +56,20 @@ const LoginForm: React.FC = () => {
 
   return (
     <Formik
-      validationSchema={LoginSchema}
-      initialValues={{ email: "", password: "" }}
-      onSubmit={loginUser}
+      validationSchema={SignupSchema}
+      initialValues={{ email: "", password: "", confirmPassword: "" }}
+      onSubmit={signUpUser}
     >
       {({ errors, values, handleChange, handleBlur }) => (
         <Form>
           <FiftyFifty>
             <FormBlock>
-              <Title className="login-form__title" level={5}>
-                Email
+              <Title className="signup-form__title" level={2}>
+                Create an account
               </Title>
+            </FormBlock>
+            <FormBlock>
+              <Title level={5}>Email</Title>
               <Input
                 type="email"
                 name="email"
@@ -88,17 +96,26 @@ const LoginForm: React.FC = () => {
               />
               <FormError message={errors.password} />
             </FormBlock>
-            <div className="login-form__actions">
+            <FormBlock>
+              <Title level={5}>Confirm password</Title>
+              <Input.Password
+                type="password"
+                name="confirmPassword"
+                value={values.confirmPassword}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                iconRender={(visible: boolean) =>
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+                required
+              />
+              <FormError message={errors.confirmPassword} />
+            </FormBlock>
+            <div className="signup-form__actions">
               <Button block size="large" htmlType="submit" type="primary">
-                Login
+                Create account
               </Button>
             </div>
-            <Typography>
-              Don't have an account?{" "}
-              <Button className="login-form__signup-link" type="link">
-                <Link to="signup">Sign up</Link>
-              </Button>
-            </Typography>
           </FiftyFifty>
         </Form>
       )}
@@ -106,4 +123,4 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm;
+export default SignupForm;

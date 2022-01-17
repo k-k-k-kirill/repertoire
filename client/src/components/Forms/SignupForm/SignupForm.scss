@@ -1,14 +1,9 @@
-.login-form {
+.signup-form {
   &__title {
     margin-bottom: 1rem !important;
   }
 
   &__actions {
-    text-align: right;
     margin-top: 2rem;
-  }
-
-  &__signup-link {
-    padding: 0;
   }
 }

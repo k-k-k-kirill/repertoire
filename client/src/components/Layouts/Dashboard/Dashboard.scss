@@ -7,6 +7,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    &__title {
+      &--minimized {
+        display: none;
+      }
+    }
+
+    &__icon {
+      margin-right: 0.5rem;
+    }
   }
 
   &__content {

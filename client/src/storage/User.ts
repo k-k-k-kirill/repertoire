@@ -14,6 +14,13 @@ class User extends BaseStorage {
       password,
     });
   };
+
+  signUp = (email?: string, password?: string) => {
+    return axios.post(`/${this.module}/signup`, {
+      email,
+      password,
+    });
+  };
 }
 
 export default new User();
