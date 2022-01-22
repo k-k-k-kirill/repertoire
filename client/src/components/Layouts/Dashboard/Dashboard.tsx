@@ -39,7 +39,9 @@ const Dashboard: React.FC = ({ children }) => {
       </Sider>
       <Layout>
         <Header />
-        <Content className="layout__content">{children}</Content>
+        <Content className="layout__content">
+          <div>{children}</div>
+        </Content>
       </Layout>
     </Layout>
   );

@@ -1,0 +1,39 @@
+.editable-title {
+  margin-bottom: 1.5rem;
+
+  &__title {
+    display: flex;
+    align-items: flex-end;
+    transition: all 0.15s ease-in-out;
+
+    h4 {
+      margin-bottom: 0 !important;
+      margin-right: 0.75rem;
+      line-height: 1 !important;
+    }
+
+    svg {
+      font-size: 1.25rem;
+      opacity: 0;
+      transition: all 0.15s ease-in-out;
+    }
+
+    &:hover {
+      cursor: pointer;
+
+      svg {
+        opacity: 1;
+      }
+    }
+  }
+
+  &__input {
+    display: flex;
+    align-items: center;
+
+    input {
+      width: auto !important;
+      min-width: 50%;
+    }
+  }
+}

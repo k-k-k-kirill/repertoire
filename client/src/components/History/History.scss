@@ -1,0 +1,21 @@
+.history {
+  min-width: 200px;
+  margin-left: 1rem;
+
+  &__move {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+
+    svg {
+      margin-left: 5px;
+      transition: all 0.15s ease-in-out;
+
+      &:hover {
+        cursor: pointer;
+        opacity: 0.75;
+      }
+    }
+  }
+}
