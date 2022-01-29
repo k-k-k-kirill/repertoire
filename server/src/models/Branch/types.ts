@@ -3,12 +3,8 @@ import Move from "../Opening/types";
 
 export default interface Branch extends Document {
   opening: string;
-  startingPosition: PiecePosition[];
+  startingPosition: string;
   moves: Move[];
-}
-
-export interface PiecePosition extends Piece {
-  position: string;
 }
 
 export interface Piece {

@@ -1,6 +1,6 @@
 import React from "react";
 import Login from "./views/Login";
-import Openings from "./views/Openings";
+import Openings from "./views/Openings/Openings";
 import OpeningEditor from "./views/OpeningEditor/OpeningEditor";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -13,7 +13,7 @@ const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/dashboard" element={<Openings />} />
+        <Route path="/openings" element={<Openings />} />
         <Route path="/openings/:id" element={<OpeningEditor />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/" element={<Login />} />

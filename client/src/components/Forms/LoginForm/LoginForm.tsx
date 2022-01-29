@@ -37,13 +37,15 @@ const LoginForm: React.FC = () => {
     try {
       const { email, password } = values;
 
-      const response = await userStorage.login(email, password);
-      const { accessToken, refreshToken } = response.data;
+      const { accessToken, refreshToken } = await userStorage.login(
+        email,
+        password
+      );
 
       sessionStorage.setItem("accessToken", accessToken);
       sessionStorage.setItem("refreshToken", refreshToken);
 
-      navigate("/dashboard");
+      navigate("/openings");
     } catch (error) {
       throw new Error("Failed to login.");
     }

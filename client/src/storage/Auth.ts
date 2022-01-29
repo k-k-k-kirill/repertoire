@@ -1,5 +1,5 @@
 import BaseStorage from "./BaseStorage";
-import axios from "../axios";
+import api from "../api";
 
 class Auth extends BaseStorage {
   module;
@@ -10,7 +10,7 @@ class Auth extends BaseStorage {
   }
 
   refreshAccessToken = (oldAccessToken: string, refreshToken: string) => {
-    return axios.post(`/${this.module}/refresh`, {
+    return api.post(`/${this.module}/refresh`, {
       accessToken: oldAccessToken,
       refreshToken,
     });

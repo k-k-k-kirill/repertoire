@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ChessInstance } from "chess.js";
+import axios from "../../axios";
+import { useNavigate } from "react-router-dom";
 
 // Styles
 import "./OpeningEditor.scss";
@@ -12,14 +14,17 @@ import EditableTitle from "../../components/EditableTitle/EditableTitle";
 import ChessBoard from "../../components/Chess/ChessBoard/ChessBoard";
 import Dashboard from "../../components/Layouts/Dashboard/Dashboard";
 import History from "../../components/History/History";
+import { Card, Button } from "antd";
 
 const Chess = require("chess.js");
 
 const Opening: React.FC = () => {
-  const [title, setTitle] = useState("Editable title");
+  const [title, setTitle] = useState("New opening");
   const [history, setHistory] = useState<string[]>([]);
   const [chess, setChess] = useState<ChessInstance | null>(null);
   const [position, setPosition] = useState<string | undefined>("start");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const startingPosition = "start";
@@ -54,12 +59,34 @@ const Opening: React.FC = () => {
     updateBoard();
   };
 
+  const onSave = async () => {
+    try {
+      await axios.post("/opening/add", {
+        title,
+        mainLine: history,
+        endPosition: chess?.fen(),
+      });
+
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Dashboard>
-      <EditableTitle
-        title={title}
-        onChange={(e) => setTitle((e.target as HTMLInputElement).value)}
-      />
+      <Card className="opening-editor__header">
+        <div className="opening-editor__header__content">
+          <EditableTitle
+            title={title}
+            onChange={(e) => setTitle((e.target as HTMLInputElement).value)}
+          />
+          <Button onClick={onSave} size="large" type="primary">
+            Save
+          </Button>
+        </div>
+      </Card>
+
       <div className="opening-editor__main">
         <ChessBoard onPieceDrop={onPieceDrop} position={position} />
         <History title="Main line" history={history} onUndo={onUndo} />
