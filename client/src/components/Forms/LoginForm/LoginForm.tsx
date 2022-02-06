@@ -9,6 +9,8 @@ import FormError from "../FormError/FormError";
 import userStorage from "../../../storage/User";
 import { useNavigate, Link } from "react-router-dom";
 import FiftyFifty from "../../Layouts/FiftyFifty/FiftyFifty";
+import { connect } from "react-redux";
+import { uiSetIsAuthenticated } from "../../../redux/session/slice";
 
 const { Title } = Typography;
 
@@ -19,18 +21,16 @@ interface LoginFormValues {
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid e-mail.").required("Email is required."),
-  password: Yup.string()
-    .min(10, "Password must be at least 10 characters long.")
-    .required("Password field is required.")
-    .matches(/[0-9]/, "Password must contain a number.")
-    .matches(/[A-Z]/, "Password must contain at least one uppercase character.")
-    .matches(
-      /[!@#$%^&*(),.?":{}|<>~]/,
-      "Password must contain at least one special character."
-    ),
+  password: Yup.string().required("Password field is required."),
 });
 
-const LoginForm: React.FC = () => {
+interface LoginFormDispatchProps {
+  uiSetIsAuthenticated: typeof uiSetIsAuthenticated;
+}
+
+const LoginForm: React.FC<LoginFormDispatchProps> = ({
+  uiSetIsAuthenticated,
+}) => {
   const navigate = useNavigate();
 
   const loginUser = async (values: LoginFormValues) => {
@@ -44,6 +44,8 @@ const LoginForm: React.FC = () => {
 
       sessionStorage.setItem("accessToken", accessToken);
       sessionStorage.setItem("refreshToken", refreshToken);
+
+      uiSetIsAuthenticated(true);
 
       navigate("/openings");
     } catch (error) {
@@ -95,7 +97,7 @@ const LoginForm: React.FC = () => {
                 Login
               </Button>
             </div>
-            <Typography>
+            <Typography className="login-form__bottom">
               Don't have an account?{" "}
               <Button className="login-form__signup-link" type="link">
                 <Link to="signup">Sign up</Link>
@@ -108,4 +110,8 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm;
+const mapDispatchToProps = {
+  uiSetIsAuthenticated,
+};
+
+export default connect(null, mapDispatchToProps)(LoginForm);

@@ -1,7 +1,7 @@
 import CustomError from "./CustomError";
 
 export default class UnauthorizedError extends CustomError {
-  statusCode = 403;
+  statusCode = 401;
   reason = "User unauthorized.";
 
   constructor() {

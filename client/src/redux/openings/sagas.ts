@@ -8,6 +8,7 @@ import { sagaFetchOpeningsComplete } from "./slice";
 import { take, call, put } from "redux-saga/effects";
 import openingStorage from "../../storage/Opening";
 import { Opening } from "../../types/types";
+import { handleError } from "../error/sagas";
 
 function* openingsSaga() {
   while (true) {
@@ -25,8 +26,8 @@ function* openingsSaga() {
           }
           break;
       }
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      yield handleError();
     }
   }
 }

@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../config";
 import makeId from "../helpers/makeId";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import UnauthorizedError from "../errors/UnauthorizedError";
 import UserModel from "../models/User/User";
 
@@ -22,18 +22,29 @@ export default class JWT {
     this.fingerprint = fingerprint || makeId(64);
   }
 
-  createRefreshToken = (userId: string, password: string) => {
+  createRefreshToken = async (userId: string, password: string) => {
     const secret = `${this.refreshSecret}${password}`;
-    return jwt.sign({ userId, context: this.getFingerprintHash() }, secret, {
-      expiresIn: "7d",
-    });
+    return jwt.sign(
+      { userId, context: await this.getFingerprintHash() },
+      secret,
+      {
+        expiresIn: "7d",
+      }
+    );
   };
 
-  createAccessToken = (userId: string, password: string) => {
+  createAccessToken = async (userId: string, password: string) => {
     const secret = `${this.accessSecret}${password}`;
-    return jwt.sign({ userId, context: this.getFingerprintHash() }, secret, {
-      expiresIn: "15min",
-    });
+    return jwt.sign(
+      {
+        userId,
+        context: await this.getFingerprintHash(),
+      },
+      secret,
+      {
+        expiresIn: "15min",
+      }
+    );
   };
 
   refreshToken = async (oldAccessToken: string, refreshToken: string) => {
@@ -60,22 +71,52 @@ export default class JWT {
 
     return {
       refreshToken,
-      accessToken: this.createAccessToken(userId, password),
+      accessToken: await this.createAccessToken(userId, password),
     };
+  };
+
+  verifyAccessToken = async (accessToken: string) => {
+    const user = await this.getUserFromToken(accessToken);
+
+    if (!user) {
+      throw new UnauthorizedError();
+    }
+
+    const { password } = user;
+    const accessTokenSecret = `${this.accessSecret}${password}`;
+    const accessTokenContextValid = await this.verifyContext(accessToken);
+    const accessTokenValid = this.verify(accessToken, accessTokenSecret);
+
+    if (!accessTokenValid || !accessTokenContextValid) {
+      throw new UnauthorizedError();
+    }
+
+    return true;
+  };
+
+  getUserFromToken = async (token: string) => {
+    const { userId } = this.decode(token);
+    const user = await UserModel.findOne({ _id: userId });
+    return user;
   };
 
   verify = (token: string, secret: string) => jwt.verify(token, secret);
 
   decode = (token: string) => jwt.decode(token) as TokenPayload;
 
-  getFingerprintHash = () => bcrypt.hashSync(this.fingerprint, this.saltRounds);
+  getFingerprintHash = async () => {
+    const hash = await bcrypt.hash(this.fingerprint, this.saltRounds);
+    return hash;
+  };
 
   getFingerprint = () => this.fingerprint;
 
-  verifyContext = (token: string) => {
-    return bcrypt.compareSync(
+  verifyContext = async (token: string) => {
+    const valid = await bcrypt.compare(
       this.getFingerprint(),
       this.decode(token).context
     );
+
+    return valid;
   };
 }

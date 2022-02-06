@@ -13,6 +13,7 @@ import { getAllOpenings } from "../../redux/openings/slice";
 
 // Types
 import { OpeningsState } from "../../redux/openings/types";
+import { getIsAuthenticated } from "../../redux/session/slice";
 import { Opening } from "../../types/types";
 
 interface OpeningsDispatchProps {
@@ -21,16 +22,21 @@ interface OpeningsDispatchProps {
 
 interface OpeningsStateProps {
   openings: Opening[];
+  isAuthenticated: boolean;
 }
 
 type OpeningsProps = OpeningsDispatchProps & OpeningsStateProps;
 
-const Openings: React.FC<OpeningsProps> = ({ uiFetchOpenings, openings }) => {
+const Openings: React.FC<OpeningsProps> = ({
+  uiFetchOpenings,
+  openings,
+  isAuthenticated,
+}) => {
   useEffect(() => {
-    uiFetchOpenings();
-  }, []);
-
-  console.log(openings);
+    if (isAuthenticated) {
+      uiFetchOpenings();
+    }
+  }, [isAuthenticated]);
 
   return (
     <Dashboard>
@@ -45,6 +51,7 @@ const Openings: React.FC<OpeningsProps> = ({ uiFetchOpenings, openings }) => {
 
 const mapStateToProps = (state: any) => ({
   openings: getAllOpenings(state),
+  isAuthenticated: getIsAuthenticated(state),
 });
 
 const mapDispatchToProps = {

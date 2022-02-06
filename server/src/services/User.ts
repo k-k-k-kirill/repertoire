@@ -48,8 +48,14 @@ class User {
       const jwtService = new JWT();
 
       return {
-        accessToken: jwtService.createAccessToken(user._id, user.password),
-        refreshToken: jwtService.createRefreshToken(user._id, user.password),
+        accessToken: await jwtService.createAccessToken(
+          user._id,
+          user.password
+        ),
+        refreshToken: await jwtService.createRefreshToken(
+          user._id,
+          user.password
+        ),
         fingerprint: jwtService.getFingerprint(),
       };
     } else {
