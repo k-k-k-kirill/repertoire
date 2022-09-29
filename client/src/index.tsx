@@ -5,13 +5,16 @@ import reportWebVitals from "./reportWebVitals";
 import store from "./redux/store";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
+import WithNotification from "./components/Notification/Notification";
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <WithNotification>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </WithNotification>
     </Provider>
   </React.StrictMode>,
   document.getElementById("root")

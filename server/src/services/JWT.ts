@@ -15,11 +15,13 @@ export default class JWT {
   private refreshSecret: string;
   private fingerprint: string;
   private saltRounds = 10;
+  userId: string | null;
 
   constructor(fingerprint?: string) {
     this.accessSecret = config.ACCESS_SECRET!;
     this.refreshSecret = config.REFRESH_SECRET!;
     this.fingerprint = fingerprint || makeId(64);
+    this.userId = null;
   }
 
   createRefreshToken = async (userId: string, password: string) => {
@@ -96,6 +98,7 @@ export default class JWT {
 
   getUserFromToken = async (token: string) => {
     const { userId } = this.decode(token);
+    this.userId = userId;
     const user = await UserModel.findOne({ _id: userId });
     return user;
   };

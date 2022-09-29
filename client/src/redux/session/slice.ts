@@ -7,6 +7,7 @@ export const session = createSlice({
     isAuthenticated: false,
   },
   reducers: {
+    // Saga actions
     sagaSetIsAuthenticated(
       state: SessionState,
       action: PayloadAction<boolean>
@@ -14,6 +15,7 @@ export const session = createSlice({
       state.isAuthenticated = action.payload;
     },
 
+    // Ui actions
     uiSetIsAuthenticated(state: SessionState, action: PayloadAction<boolean>) {
       state.isAuthenticated = action.payload;
     },

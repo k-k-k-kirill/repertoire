@@ -1,27 +1,19 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-
-// Components
 import Dashboard from "../../components/Layouts/Dashboard/Dashboard";
 import OpeningList from "../../components/OpeningList/OpeningList";
-
-// Action creators
-import { uiFetchOpenings } from "../../redux/openings/slice";
-
-// Selectors
-import { getAllOpenings } from "../../redux/openings/slice";
-
-// Types
-import { OpeningsState } from "../../redux/openings/types";
+import { uiFetchOpenings } from "../../redux/branches/slice";
+import { getAllOpenings } from "../../redux/branches/slice";
 import { getIsAuthenticated } from "../../redux/session/slice";
-import { Opening } from "../../types/types";
+import { Branch } from "../../types/types";
+import "./Openings.scss";
 
 interface OpeningsDispatchProps {
   uiFetchOpenings: typeof uiFetchOpenings;
 }
 
 interface OpeningsStateProps {
-  openings: Opening[];
+  openings: Branch[];
   isAuthenticated: boolean;
 }
 
@@ -40,11 +32,13 @@ const Openings: React.FC<OpeningsProps> = ({
 
   return (
     <Dashboard>
-      {openings ? (
-        <OpeningList openings={openings} />
-      ) : (
-        "There are no openings in your library yet."
-      )}
+      <div className="openings">
+        {openings ? (
+          <OpeningList openings={openings} />
+        ) : (
+          "There are no openings in your library yet."
+        )}
+      </div>
     </Dashboard>
   );
 };

@@ -6,9 +6,12 @@ export interface MoveData {
   piece: string | ShortMove;
 }
 
-export interface Opening {
-  _id: string;
+export interface Branch {
+  _id?: string;
   title: string;
   mainLine?: string[];
+  startPosition?: string;
   endPosition?: string;
+  parent?: string | null;
+  owner?: string | null;
 }

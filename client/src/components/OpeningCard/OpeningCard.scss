@@ -1,5 +1,20 @@
 .opening-card {
+  margin-bottom: 1rem;
+  background-color: #fff;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+
+  &__image {
+    width: 100px;
+    height: 100px;
+  }
+
   &__title {
     margin-bottom: 0 !important;
+  }
+
+  &:hover {
+    cursor: pointer;
   }
 }

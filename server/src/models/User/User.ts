@@ -1,6 +1,5 @@
 import mongoose, { Schema } from "mongoose";
 import User from "./types";
-import { OpeningSchema } from "../Opening/Opening";
 
 const UserSchema: Schema = new Schema(
   {
@@ -23,10 +22,6 @@ const UserSchema: Schema = new Schema(
     },
     avatar: {
       type: String,
-      required: false,
-    },
-    openings: {
-      type: [OpeningSchema],
       required: false,
     },
   },

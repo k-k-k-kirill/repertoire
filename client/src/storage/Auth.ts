@@ -1,6 +1,11 @@
 import BaseStorage from "./BaseStorage";
 import api from "../api";
 
+interface RefreshTokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
 class Auth extends BaseStorage {
   module;
 
@@ -9,7 +14,10 @@ class Auth extends BaseStorage {
     this.module = "auth";
   }
 
-  refreshAccessToken = (oldAccessToken: string, refreshToken: string) => {
+  refreshAccessToken = (
+    oldAccessToken: string,
+    refreshToken: string
+  ): Promise<RefreshTokenResponse> => {
     return api.post(`/${this.module}/refresh`, {
       accessToken: oldAccessToken,
       refreshToken,

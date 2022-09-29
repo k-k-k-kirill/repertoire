@@ -1,8 +1,8 @@
 import { call, all, spawn } from "redux-saga/effects";
-import openingsSagas from "./openings/sagas";
+import branchesSagas from "./branches/sagas";
 
 export default function* rootSaga() {
-  const sagas = [...openingsSagas];
+  const sagas = [...branchesSagas];
 
   yield all(
     sagas.map((saga) =>

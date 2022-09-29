@@ -12,10 +12,20 @@ const { Title } = Typography;
 interface EditableTitleProps {
   title: string;
   onChange: (e: React.FormEvent<HTMLInputElement>) => void;
+  onEditingComplete: () => void;
 }
 
-const EditableTitle: React.FC<EditableTitleProps> = ({ title, onChange }) => {
+const EditableTitle: React.FC<EditableTitleProps> = ({
+  title,
+  onChange,
+  onEditingComplete,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
+
+  const onOkayClick = () => {
+    setIsEditing(false);
+    onEditingComplete();
+  };
 
   return (
     <div className="editable-title">
@@ -27,7 +37,7 @@ const EditableTitle: React.FC<EditableTitleProps> = ({ title, onChange }) => {
             bordered={false}
             placeholder="Accelerated London system"
           />
-          <CheckOutlined onClick={() => setIsEditing(false)} />
+          <CheckOutlined onClick={onOkayClick} />
         </div>
       ) : (
         <div

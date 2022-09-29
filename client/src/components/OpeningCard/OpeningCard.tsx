@@ -1,28 +1,29 @@
 import React from "react";
-
-// Styles
 import "./OpeningCard.scss";
-
-// Components
-import { Card, Col, Typography } from "antd";
-
-// Types
-import { Opening } from "../../types/types";
+import { Col, Typography } from "antd";
+import { Branch } from "../../types/types";
+import PlaceholderImage from "../../assets/25643.jpg";
+import { Link } from "react-router-dom";
 
 const { Title } = Typography;
 
 interface OpeningCardProps {
-  opening: Opening;
+  opening: Branch;
 }
 
 const OpeningCard: React.FC<OpeningCardProps> = ({ opening }) => {
   return (
-    <Col xs={{ span: 24 }} md={{ span: 8 }}>
-      <Card>
+    <Col xs={{ span: 12 }}>
+      <Link
+        to={`/openings/edit`}
+        state={{ branchId: opening._id }}
+        className="opening-card"
+      >
+        <img className="opening-card__image" src={PlaceholderImage} />
         <Title className="opening-card__title" level={5}>
           {opening.title}
         </Title>
-      </Card>
+      </Link>
     </Col>
   );
 };

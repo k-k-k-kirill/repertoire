@@ -19,7 +19,6 @@ const App: React.FC<AppStateProps> = ({ isAuthenticated }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(isAuthenticated);
     if (!isAuthenticated) {
       navigate("/");
     }
@@ -28,7 +27,8 @@ const App: React.FC<AppStateProps> = ({ isAuthenticated }) => {
   return (
     <Routes>
       <Route path="/openings" element={<Openings />} />
-      <Route path="/openings/:id" element={<OpeningEditor />} />
+      <Route path="/openings/add" element={<OpeningEditor />} />
+      <Route path="/openings/edit" element={<OpeningEditor />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/" element={<Login />} />
       <Route path="*" element={<Login />} />

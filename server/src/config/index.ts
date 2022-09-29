@@ -10,4 +10,5 @@ export default {
   DATABASE_HOST: process.env.DATABASE_HOST,
   ACCESS_SECRET: process.env.ACCESS_SECRET,
   REFRESH_SECRET: process.env.REFRESH_SECRET,
+  ENVIRONMENT: process.env.ENVIRONMENT,
 };

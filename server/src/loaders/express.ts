@@ -5,6 +5,7 @@ import router from "../api/index";
 import errorHandler from "../middlewares/errorHandler";
 import NotFoundError from "../errors/NotFoundError";
 import cookieParser from "cookie-parser";
+import config from "../config";
 
 export default (app: Application) => {
   app.use(express.json());
@@ -16,7 +17,7 @@ export default (app: Application) => {
   };
 
   app.use(cors(corsConfig));
-  app.use(morgan("dev"));
+  app.use(morgan("combined"));
   app.use(cookieParser());
   app.use("/", router);
 
