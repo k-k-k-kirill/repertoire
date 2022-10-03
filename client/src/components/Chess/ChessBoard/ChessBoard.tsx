@@ -9,12 +9,21 @@ import Chessboard from "chessboardjsx";
 interface ChessBoardProps {
   position: string | undefined;
   onPieceDrop: (move: MoveData) => void;
+  allowDrag: () => boolean;
 }
 
-const ChessBoard: React.FC<ChessBoardProps> = ({ position, onPieceDrop }) => {
+const ChessBoard: React.FC<ChessBoardProps> = ({
+  position,
+  onPieceDrop,
+  allowDrag,
+}) => {
   return (
     <div>
-      <Chessboard onDrop={onPieceDrop} position={position} />
+      <Chessboard
+        allowDrag={allowDrag}
+        onDrop={onPieceDrop}
+        position={position}
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./History.scss";
 import { Card, Typography, Tooltip, Dropdown, Menu, Modal, Input } from "antd";
@@ -22,18 +22,38 @@ interface HistoryProps {
   title: string;
   onUndo: () => void;
   chess: any;
+  onBoardEnabledChange: (boardEnabledState: boolean) => void;
 }
 
 const { Title } = Typography;
 
-const History: React.FC<HistoryProps> = ({ history, title, onUndo, chess }) => {
+const History: React.FC<HistoryProps> = ({
+  history,
+  title,
+  onUndo,
+  chess,
+  onBoardEnabledChange,
+}) => {
   const dispatch = useDispatch();
   const currentBranch = useSelector((state: { branches: BranchState }) =>
     getCurrentBranch(state)
   );
-  const children = useSelector((state: { branches: BranchState }) =>
+  const childBranches = useSelector((state: { branches: BranchState }) =>
     getChildrenForCurrentBranch(state)
   );
+  const childBranchesForCurrentPosition = childBranches.filter(
+    (branch: Branch) => {
+      return branch.startPosition === chess?.fen();
+    }
+  );
+
+  useEffect(() => {
+    if (childBranchesForCurrentPosition.length > 0) {
+      onBoardEnabledChange(false);
+    } else {
+      onBoardEnabledChange(true);
+    }
+  }, [childBranchesForCurrentPosition]);
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [newBranchName, setNewBranchName] = useState<string>("");
@@ -76,27 +96,23 @@ const History: React.FC<HistoryProps> = ({ history, title, onUndo, chess }) => {
                         <PlusOutlined />
                         {"  "}Add branch
                       </Menu.Item>
-                      {children
-                        .filter((branch: Branch) => {
-                          return branch.startPosition === chess?.fen();
-                        })
-                        .map((branch: Branch) => (
-                          <Link
-                            to={`/openings/edit`}
-                            state={{ branchId: branch._id }}
+                      {childBranchesForCurrentPosition.map((branch: Branch) => (
+                        <Link
+                          to={`/openings/edit`}
+                          state={{ branchId: branch._id }}
+                        >
+                          <Menu.Item
+                            key={`branch-${branch._id}`}
+                            onClick={() =>
+                              onBranchMenuItemClick(
+                                branch._id || currentBranch._id
+                              )
+                            }
                           >
-                            <Menu.Item
-                              key={`branch-${branch._id}`}
-                              onClick={() =>
-                                onBranchMenuItemClick(
-                                  branch._id || currentBranch._id
-                                )
-                              }
-                            >
-                              {branch.title}
-                            </Menu.Item>
-                          </Link>
-                        ))}
+                            {branch.title}
+                          </Menu.Item>
+                        </Link>
+                      ))}
                     </Menu>
                   }
                   placement="bottomLeft"

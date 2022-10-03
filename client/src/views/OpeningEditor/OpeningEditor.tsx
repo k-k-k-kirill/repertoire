@@ -61,6 +61,7 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
   );
   const [chess] = useState<ChessInstance>(new Chess());
   const [position, setPosition] = useState<string | undefined>("start");
+  const [boardEnabled, setBoardEnabled] = useState<boolean>(true);
 
   useEffect(() => {
     if (locationState && locationState.branchId) {
@@ -171,12 +172,21 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
       </Card>
 
       <div className="opening-editor__main">
-        <ChessBoard onPieceDrop={onPieceDrop} position={position} />
+        <ChessBoard
+          allowDrag={() => {
+            return boardEnabled;
+          }}
+          onPieceDrop={onPieceDrop}
+          position={position}
+        />
         <History
           chess={chess}
           title="Main line"
           history={history}
           onUndo={onUndo}
+          onBoardEnabledChange={(boardEnabledState: boolean) =>
+            setBoardEnabled(boardEnabledState)
+          }
         />
       </div>
     </Dashboard>
