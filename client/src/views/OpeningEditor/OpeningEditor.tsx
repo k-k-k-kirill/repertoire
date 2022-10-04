@@ -17,7 +17,8 @@ import {
 } from "../../redux/branches/slice";
 import { useLocation, Location } from "react-router-dom";
 import { Branch as BranchType } from "../../types/types";
-import { EditorLocationState } from "./types";
+import { EditorLocationState, Breadcrumb } from "./types";
+import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 
 const Chess = require("chess.js");
 
@@ -62,6 +63,11 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
   const [chess] = useState<ChessInstance>(new Chess());
   const [position, setPosition] = useState<string | undefined>("start");
   const [boardEnabled, setBoardEnabled] = useState<boolean>(true);
+  const [breadcrumbs, setBreadcrumbs] = useState<Breadcrumb[]>(
+    currentBranch && currentBranch._id
+      ? [{ _id: currentBranch._id, label: currentBranch.title }]
+      : []
+  );
 
   useEffect(() => {
     if (locationState && locationState.branchId) {
@@ -98,6 +104,12 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
       if (currentBranch.mainLine) {
         setHistory(currentBranch.mainLine);
         populateMoves(currentBranch.mainLine);
+      }
+
+      if (currentBranch._id) {
+        setBreadcrumbs([
+          { _id: currentBranch._id, label: currentBranch.title },
+        ]);
       }
 
       setPosition(startingPosition);
@@ -158,6 +170,12 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
     }
   };
 
+  const handleBreadcrumbAdd = (breadcrumb: Breadcrumb) => {
+    let newBreadcrumbs = [...breadcrumbs];
+    newBreadcrumbs.push(breadcrumb);
+    setBreadcrumbs(newBreadcrumbs);
+  };
+
   return (
     <Dashboard>
       <Title level={3}>Opening editor</Title>
@@ -170,6 +188,8 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
           />
         </div>
       </Card>
+
+      <Breadcrumbs items={breadcrumbs} />
 
       <div className="opening-editor__main">
         <ChessBoard
@@ -187,6 +207,7 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
           onBoardEnabledChange={(boardEnabledState: boolean) =>
             setBoardEnabled(boardEnabledState)
           }
+          onBreadCrumbAdd={(breadcrumb) => handleBreadcrumbAdd(breadcrumb)}
         />
       </div>
     </Dashboard>

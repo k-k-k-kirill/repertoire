@@ -16,6 +16,7 @@ import {
 import { BranchState } from "../../redux/branches/types";
 import { Branch } from "../../types/types";
 import { Link } from "react-router-dom";
+import { Breadcrumb } from "../../views/OpeningEditor/types";
 
 interface HistoryProps {
   history: string[];
@@ -23,6 +24,7 @@ interface HistoryProps {
   onUndo: () => void;
   chess: any;
   onBoardEnabledChange: (boardEnabledState: boolean) => void;
+  onBreadCrumbAdd: (breadcrumb: Breadcrumb) => void;
 }
 
 const { Title } = Typography;
@@ -33,6 +35,7 @@ const History: React.FC<HistoryProps> = ({
   onUndo,
   chess,
   onBoardEnabledChange,
+  onBreadCrumbAdd,
 }) => {
   const dispatch = useDispatch();
   const currentBranch = useSelector((state: { branches: BranchState }) =>
@@ -41,11 +44,11 @@ const History: React.FC<HistoryProps> = ({
   const childBranches = useSelector((state: { branches: BranchState }) =>
     getChildrenForCurrentBranch(state)
   );
-  const childBranchesForCurrentPosition = childBranches.filter(
-    (branch: Branch) => {
-      return branch.startPosition === chess?.fen();
-    }
-  );
+  const childBranchesForCurrentPosition = childBranches
+    ? childBranches.filter((branch: Branch) => {
+        return branch.startPosition === chess?.fen();
+      })
+    : [];
 
   useEffect(() => {
     if (childBranchesForCurrentPosition.length > 0) {
@@ -80,6 +83,7 @@ const History: React.FC<HistoryProps> = ({
   return (
     <Card className="history">
       <Title level={5}>{title}</Title>
+
       {history.map((item, index) => (
         <div className="history__move" key={item}>
           <span>{item}</span>
@@ -103,11 +107,18 @@ const History: React.FC<HistoryProps> = ({
                         >
                           <Menu.Item
                             key={`branch-${branch._id}`}
-                            onClick={() =>
+                            onClick={() => {
+                              if (branch._id) {
+                                onBreadCrumbAdd({
+                                  _id: branch._id,
+                                  label: branch.title,
+                                });
+                              }
+
                               onBranchMenuItemClick(
                                 branch._id || currentBranch._id
-                              )
-                            }
+                              );
+                            }}
                           >
                             {branch.title}
                           </Menu.Item>
@@ -123,6 +134,7 @@ const History: React.FC<HistoryProps> = ({
               </Tooltip>
             </>
           )}
+
           <Modal
             centered
             title="Add new branch"

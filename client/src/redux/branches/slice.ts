@@ -83,8 +83,7 @@ export const branches = createSlice({
       state: BranchState,
       action: PayloadAction<Branch>
     ) => {
-      const oldList = [action.payload, ...state.list];
-      const { list, byId } = organizeState(state, oldList);
+      const { list, byId } = organizeState(state, [action.payload]);
 
       state.list = list;
       state.byId = byId;
