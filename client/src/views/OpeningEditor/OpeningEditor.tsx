@@ -22,6 +22,38 @@ import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 
 const Chess = require("chess.js");
 
+const getUpdatedBreadcrumbs = (
+  currentBreadcrumbs: Breadcrumb[],
+  selectedBranch: BranchType
+): Breadcrumb[] => {
+  let currentBreadcrumbsCopy: Breadcrumb[] = [...currentBreadcrumbs];
+  let newBreadcrumbs: Breadcrumb[] = [];
+
+  const currentBranchBreadcrumbIndex = currentBreadcrumbsCopy.findIndex(
+    (breadcrumb) => {
+      return breadcrumb._id === selectedBranch._id;
+    }
+  );
+
+  if (currentBranchBreadcrumbIndex >= 0) {
+    newBreadcrumbs = currentBreadcrumbsCopy.slice(
+      0,
+      currentBranchBreadcrumbIndex + 1
+    );
+  } else {
+    if (selectedBranch._id) {
+      newBreadcrumbs = currentBreadcrumbsCopy;
+
+      newBreadcrumbs.push({
+        _id: selectedBranch._id,
+        label: selectedBranch.title,
+      });
+    }
+  }
+
+  return newBreadcrumbs;
+};
+
 const { Title } = Typography;
 
 interface OpeningEditorStateProps {
@@ -63,11 +95,7 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
   const [chess] = useState<ChessInstance>(new Chess());
   const [position, setPosition] = useState<string | undefined>("start");
   const [boardEnabled, setBoardEnabled] = useState<boolean>(true);
-  const [breadcrumbs, setBreadcrumbs] = useState<Breadcrumb[]>(
-    currentBranch && currentBranch._id
-      ? [{ _id: currentBranch._id, label: currentBranch.title }]
-      : []
-  );
+  const [breadcrumbs, setBreadcrumbs] = useState<Breadcrumb[]>([]);
 
   useEffect(() => {
     if (locationState && locationState.branchId) {
@@ -106,15 +134,19 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
         populateMoves(currentBranch.mainLine);
       }
 
-      if (currentBranch._id) {
-        setBreadcrumbs([
-          { _id: currentBranch._id, label: currentBranch.title },
-        ]);
-      }
-
       setPosition(startingPosition);
     }
   }, [currentBranch]);
+
+  useEffect(() => {
+    if (currentBranch) {
+      const updatedBreadcrumbs = getUpdatedBreadcrumbs(
+        breadcrumbs,
+        currentBranch
+      );
+      setBreadcrumbs(updatedBreadcrumbs);
+    }
+  }, [currentBranch?._id]);
 
   const populateMoves = (moves: string[]) => {
     moves.forEach((move) => chess.move(move));
@@ -170,12 +202,6 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
     }
   };
 
-  const handleBreadcrumbAdd = (breadcrumb: Breadcrumb) => {
-    let newBreadcrumbs = [...breadcrumbs];
-    newBreadcrumbs.push(breadcrumb);
-    setBreadcrumbs(newBreadcrumbs);
-  };
-
   return (
     <Dashboard>
       <Title level={3}>Opening editor</Title>
@@ -207,7 +233,6 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
           onBoardEnabledChange={(boardEnabledState: boolean) =>
             setBoardEnabled(boardEnabledState)
           }
-          onBreadCrumbAdd={(breadcrumb) => handleBreadcrumbAdd(breadcrumb)}
         />
       </div>
     </Dashboard>

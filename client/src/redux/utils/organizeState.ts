@@ -1,8 +1,8 @@
-import { merge, unionBy } from "lodash";
+import { unionBy } from "lodash";
 
 export default <Type extends { _id?: string }>(state: any, data: Type[]) => {
   let byId: Record<string, Type> = {};
-  const list: Type[] = unionBy(state.list, data, "_id");
+  const list: Type[] = unionBy(data, [...state.list], "_id");
 
   list.forEach((item: Type) => {
     if (item._id!) {

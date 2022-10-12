@@ -16,7 +16,6 @@ import {
 import { BranchState } from "../../redux/branches/types";
 import { Branch } from "../../types/types";
 import { Link } from "react-router-dom";
-import { Breadcrumb } from "../../views/OpeningEditor/types";
 
 interface HistoryProps {
   history: string[];
@@ -24,7 +23,6 @@ interface HistoryProps {
   onUndo: () => void;
   chess: any;
   onBoardEnabledChange: (boardEnabledState: boolean) => void;
-  onBreadCrumbAdd: (breadcrumb: Breadcrumb) => void;
 }
 
 const { Title } = Typography;
@@ -35,8 +33,11 @@ const History: React.FC<HistoryProps> = ({
   onUndo,
   chess,
   onBoardEnabledChange,
-  onBreadCrumbAdd,
 }) => {
+  const getDisplayedChildBranches = (allBranchs: Branch[]) => {
+    return allBranchs.filter((branch) => branch.startPosition === chess?.fen());
+  };
+
   const dispatch = useDispatch();
   const currentBranch = useSelector((state: { branches: BranchState }) =>
     getCurrentBranch(state)
@@ -44,19 +45,26 @@ const History: React.FC<HistoryProps> = ({
   const childBranches = useSelector((state: { branches: BranchState }) =>
     getChildrenForCurrentBranch(state)
   );
-  const childBranchesForCurrentPosition = childBranches
-    ? childBranches.filter((branch: Branch) => {
-        return branch.startPosition === chess?.fen();
-      })
-    : [];
+
+  const [displayedChildBranches, setDisplayedChildBranches] = useState<
+    Branch[]
+  >([]);
 
   useEffect(() => {
-    if (childBranchesForCurrentPosition.length > 0) {
+    if (childBranches) {
+      const branchesToDisplay = getDisplayedChildBranches(childBranches);
+
+      setDisplayedChildBranches(branchesToDisplay);
+    }
+  }, [currentBranch]);
+
+  useEffect(() => {
+    if (displayedChildBranches.length > 0) {
       onBoardEnabledChange(false);
     } else {
       onBoardEnabledChange(true);
     }
-  }, [childBranchesForCurrentPosition]);
+  }, [displayedChildBranches]);
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [newBranchName, setNewBranchName] = useState<string>("");
@@ -80,6 +88,8 @@ const History: React.FC<HistoryProps> = ({
     dispatch(uiSetCurrentBranch(branchId));
   };
 
+  const shouldShowUndoButton = currentBranch?.startPosition !== chess?.fen();
+
   return (
     <Card className="history">
       <Title level={5}>{title}</Title>
@@ -89,9 +99,12 @@ const History: React.FC<HistoryProps> = ({
           <span>{item}</span>
           {index === history.length - 1 && (
             <>
-              <Tooltip placement="top" title="Undo move">
-                <CloseCircleOutlined onClick={onUndo} />
-              </Tooltip>
+              {shouldShowUndoButton && (
+                <Tooltip placement="top" title="Undo move">
+                  <CloseCircleOutlined onClick={onUndo} />
+                </Tooltip>
+              )}
+
               <Tooltip placement="top" title="Branches">
                 <Dropdown
                   overlay={
@@ -100,7 +113,7 @@ const History: React.FC<HistoryProps> = ({
                         <PlusOutlined />
                         {"  "}Add branch
                       </Menu.Item>
-                      {childBranchesForCurrentPosition.map((branch: Branch) => (
+                      {displayedChildBranches.map((branch: Branch) => (
                         <Link
                           to={`/openings/edit`}
                           state={{ branchId: branch._id }}
@@ -108,13 +121,6 @@ const History: React.FC<HistoryProps> = ({
                           <Menu.Item
                             key={`branch-${branch._id}`}
                             onClick={() => {
-                              if (branch._id) {
-                                onBreadCrumbAdd({
-                                  _id: branch._id,
-                                  label: branch.title,
-                                });
-                              }
-
                               onBranchMenuItemClick(
                                 branch._id || currentBranch._id
                               );

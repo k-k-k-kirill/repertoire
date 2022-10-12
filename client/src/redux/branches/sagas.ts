@@ -9,6 +9,7 @@ import {
   UiFetchByParentIdAction,
   SagaFetchBranchesAction,
   SagaFetchByIdAction,
+  UiClearCurrentBranch,
 } from "./actions";
 import {
   sagaFetchOpenings,
@@ -19,6 +20,7 @@ import {
   sagaAddBranchComplete,
   sagaFetchByIdComplete,
   sagaFetchById,
+  sagaModifyBranchComplete,
 } from "./slice";
 import { uiSetNotification } from "../notification/slice";
 import { take, put } from "redux-saga/effects";
@@ -129,7 +131,12 @@ function* watchModifyBranch() {
     const action: UiModifyBranchAction = yield take(UiAction.ModifyBranch);
 
     if (action.type === UiAction.ModifyBranch) {
-      yield callWithTokenRefresh(branchStorage.modify, action.payload);
+      const modifiedBranch: Branch = yield callWithTokenRefresh(
+        branchStorage.modify,
+        action.payload
+      );
+
+      yield put(sagaModifyBranchComplete(modifiedBranch));
     }
   }
 }

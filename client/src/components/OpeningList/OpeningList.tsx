@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Row, Typography, Button } from "antd";
 import { Branch } from "../../types/types";
 import OpeningCard from "../OpeningCard/OpeningCard";
 import "./OpeningList.scss";
 import { Link } from "react-router-dom";
+import { uiClearCurrentBranch } from "../../redux/branches/slice";
 
 const { Title } = Typography;
 
@@ -12,6 +14,12 @@ interface OpeningListProps {
 }
 
 const OpeningList: React.FC<OpeningListProps> = ({ openings }) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(uiClearCurrentBranch());
+  }, []);
+
   return (
     <>
       <div className="opening-list__top">

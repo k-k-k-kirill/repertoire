@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, Action } from "@reduxjs/toolkit";
 import { Branch } from "../../types/types";
 import { BranchState } from "./types";
 import organizeState from "../utils/organizeState";
@@ -27,6 +27,15 @@ export const branches = createSlice({
     },
 
     uiModifyBranch(state: BranchState, action: PayloadAction<Branch>) {},
+    sagaModifyBranchComplete(
+      state: BranchState,
+      action: PayloadAction<Branch>
+    ) {
+      const { list, byId } = organizeState<Branch>(state, [action.payload]);
+
+      state.list = list;
+      state.byId = byId;
+    },
 
     // Saga Actions
     sagaFetchOpenings() {},
@@ -88,6 +97,10 @@ export const branches = createSlice({
       state.list = list;
       state.byId = byId;
     },
+
+    uiClearCurrentBranch: (state: BranchState, action: Action) => {
+      state.current = null;
+    },
   },
 });
 
@@ -107,12 +120,16 @@ export const {
   sagaAddBranchComplete,
   sagaFetchByIdComplete,
   sagaFetchById,
+  sagaModifyBranchComplete,
+  uiClearCurrentBranch,
 } = branches.actions;
 
 // Selectors
 export const getAllBranches = (state: any) => state.branches.list;
+
 export const getBranchById = (state: any, branchId: string) =>
   state.branches.byId[branchId];
+
 export const getAllOpenings = (state: any) => {
   return state.branches
     ? state.branches.list.filter(
@@ -121,6 +138,7 @@ export const getAllOpenings = (state: any) => {
       )
     : [];
 };
+
 export const getCurrentBranch = (state: any) => {
   const branchId = state.branches.current;
 
@@ -128,6 +146,7 @@ export const getCurrentBranch = (state: any) => {
 
   return getBranchById(state, branchId);
 };
+
 export const getChildrenForCurrentBranch = (state: any) => {
   const parentId = state.branches.current;
   const allBranches = state.branches.list;

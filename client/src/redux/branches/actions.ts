@@ -6,6 +6,7 @@ export enum UiAction {
   ModifyBranch = "branches/uiModifyBranch",
   SetCurrent = "branches/uiSetCurrentBranch",
   FetchByParentId = "branches/uiFetchByParentId",
+  ClearCurrentBranch = "branches/uiClearCurrentBranch",
 }
 
 export enum SagaAction {
@@ -17,6 +18,7 @@ export enum SagaAction {
   AddBranchComplete = "branches/sagaAddBranchComplete",
   FetchById = "branches/sagaFetchById",
   FetchByIdComplete = "branches/sagaFetchByIdComplete",
+  ModifyBranchComplete = "branches/sagaModifyBranchComplete",
 }
 
 // Ui actions
@@ -44,6 +46,10 @@ export interface UiFetchByParentIdAction {
   payload: {
     parentId: string;
   };
+}
+
+export interface UiClearCurrentBranch {
+  type: UiAction.ClearCurrentBranch;
 }
 
 // Saga actions
@@ -91,5 +97,10 @@ export interface SagaFetchByIdAction {
 
 export interface SagaFetchByIdCompleteAction {
   type: SagaAction.FetchByIdComplete;
+  payload: Branch;
+}
+
+export interface SagaModifyBranchCompleteAction {
+  type: SagaAction.ModifyBranchComplete;
   payload: Branch;
 }
