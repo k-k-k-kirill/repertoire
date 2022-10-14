@@ -136,7 +136,7 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
 
       setPosition(startingPosition);
     }
-  }, [currentBranch]);
+  }, [currentBranch?._id]);
 
   useEffect(() => {
     if (currentBranch) {
@@ -227,6 +227,7 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
         />
         <History
           chess={chess}
+          currentPositionFen={position}
           title="Main line"
           history={history}
           onUndo={onUndo}

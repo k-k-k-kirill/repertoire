@@ -22,6 +22,7 @@ interface HistoryProps {
   title: string;
   onUndo: () => void;
   chess: any;
+  currentPositionFen: string | undefined;
   onBoardEnabledChange: (boardEnabledState: boolean) => void;
 }
 
@@ -32,31 +33,45 @@ const History: React.FC<HistoryProps> = ({
   title,
   onUndo,
   chess,
+  currentPositionFen,
   onBoardEnabledChange,
 }) => {
-  const getDisplayedChildBranches = (allBranchs: Branch[]) => {
-    return allBranchs.filter((branch) => branch.startPosition === chess?.fen());
-  };
+  const getDisplayedChildBranches = useCallback(
+    (allBranchs: Branch[], fenOfCurrentPosition: string | undefined) => {
+      return allBranchs.filter(
+        (branch) => branch.startPosition === fenOfCurrentPosition
+      );
+    },
+    [currentPositionFen]
+  );
 
   const dispatch = useDispatch();
+
   const currentBranch = useSelector((state: { branches: BranchState }) =>
     getCurrentBranch(state)
   );
   const childBranches = useSelector((state: { branches: BranchState }) =>
     getChildrenForCurrentBranch(state)
   );
-
   const [displayedChildBranches, setDisplayedChildBranches] = useState<
     Branch[]
   >([]);
+  const [showUndoButton, setShowUndoButton] = useState<boolean>(false);
 
   useEffect(() => {
-    if (childBranches) {
-      const branchesToDisplay = getDisplayedChildBranches(childBranches);
+    if (currentBranch) {
+      setShowUndoButton(currentBranch.startPosition !== currentPositionFen);
 
-      setDisplayedChildBranches(branchesToDisplay);
+      if (childBranches) {
+        const branchesToDisplay = getDisplayedChildBranches(
+          childBranches,
+          currentPositionFen
+        );
+
+        setDisplayedChildBranches(branchesToDisplay);
+      }
     }
-  }, [currentBranch]);
+  }, [currentBranch?._id, currentPositionFen]);
 
   useEffect(() => {
     if (displayedChildBranches.length > 0) {
@@ -76,8 +91,8 @@ const History: React.FC<HistoryProps> = ({
       uiAddBranch({
         title: newBranchName,
         mainLine: history,
-        startPosition: chess?.fen(),
-        endPosition: chess?.fen(),
+        startPosition: currentPositionFen,
+        endPosition: currentPositionFen,
         parent: currentBranch._id,
         owner: null,
       })
@@ -88,8 +103,6 @@ const History: React.FC<HistoryProps> = ({
     dispatch(uiSetCurrentBranch(branchId));
   };
 
-  const shouldShowUndoButton = currentBranch?.startPosition !== chess?.fen();
-
   return (
     <Card className="history">
       <Title level={5}>{title}</Title>
@@ -99,7 +112,7 @@ const History: React.FC<HistoryProps> = ({
           <span>{item}</span>
           {index === history.length - 1 && (
             <>
-              {shouldShowUndoButton && (
+              {showUndoButton && (
                 <Tooltip placement="top" title="Undo move">
                   <CloseCircleOutlined onClick={onUndo} />
                 </Tooltip>
