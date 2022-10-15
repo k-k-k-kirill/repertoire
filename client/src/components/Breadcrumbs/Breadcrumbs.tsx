@@ -1,14 +1,18 @@
 import React from "react";
-import { Breadcrumb } from "../../views/OpeningEditor/types";
+import { Breadcrumb } from "../../types/types";
 import { useDispatch } from "react-redux";
 import "./Breadcrumbs.scss";
 import { uiSetCurrentBranch } from "../../redux/branches/slice";
 
 interface BreadcrumbsProps {
   items: Breadcrumb[];
+  currentBranchTitle: string;
 }
 
-const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
+const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
+  items,
+  currentBranchTitle,
+}) => {
   const dispatch = useDispatch();
 
   const onBreadcrumbClick = (branchId: string) => {
@@ -27,7 +31,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
             key={item._id}
             onClick={() => (isLastItem ? null : onBreadcrumbClick(item._id))}
           >
-            {item.label}
+            {isLastItem ? currentBranchTitle : item.label}
             {isLastItem ? null : (
               <span className="breadcrumbs__separator">/</span>
             )}

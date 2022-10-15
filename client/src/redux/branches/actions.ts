@@ -1,4 +1,5 @@
 import { Branch } from "../../types/types";
+import { ModifyBranchActionPayload } from "./types";
 
 export enum UiAction {
   FetchOpenings = "branches/uiFetchOpenings",
@@ -19,6 +20,7 @@ export enum SagaAction {
   FetchById = "branches/sagaFetchById",
   FetchByIdComplete = "branches/sagaFetchByIdComplete",
   ModifyBranchComplete = "branches/sagaModifyBranchComplete",
+  ClearChildBranches = "branches/sagaClearChildBranches",
 }
 
 // Ui actions
@@ -33,7 +35,7 @@ export interface UiAddBranchAction {
 
 export interface UiModifyBranchAction {
   type: UiAction.ModifyBranch;
-  payload: Branch;
+  payload: ModifyBranchActionPayload;
 }
 
 export interface UiSetCurrentBranchAction {
@@ -103,4 +105,9 @@ export interface SagaFetchByIdCompleteAction {
 export interface SagaModifyBranchCompleteAction {
   type: SagaAction.ModifyBranchComplete;
   payload: Branch;
+}
+
+export interface SagaClearChildBranchesAction {
+  type: SagaAction.ClearChildBranches;
+  payload: string;
 }

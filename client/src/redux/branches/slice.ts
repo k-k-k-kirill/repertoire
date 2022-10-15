@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction, Action } from "@reduxjs/toolkit";
 import { Branch } from "../../types/types";
-import { BranchState } from "./types";
-import organizeState from "../utils/organizeState";
+import { BranchState, ModifyBranchActionPayload } from "./types";
+import rightHandMergeState from "../utils/rightHandMergeState";
+import organizeById from "../utils/organizeById";
 
 export const branches = createSlice({
   name: "branches",
@@ -17,21 +18,36 @@ export const branches = createSlice({
     uiAddBranch(state: BranchState, action: PayloadAction<Branch>) {},
     sagaAddBranchComplete(state: BranchState, action: PayloadAction<Branch>) {
       if (action.payload._id) {
-        const list = [action.payload];
-        let byId: Record<string, Branch> = {};
-        byId[action.payload._id] = action.payload;
+        const { list, byId } = rightHandMergeState<Branch>(state, [
+          action.payload,
+        ]);
 
         state.list = list;
         state.byId = byId;
       }
     },
 
-    uiModifyBranch(state: BranchState, action: PayloadAction<Branch>) {},
+    uiModifyBranch(
+      state: BranchState,
+      action: PayloadAction<ModifyBranchActionPayload>
+    ) {},
     sagaModifyBranchComplete(
       state: BranchState,
       action: PayloadAction<Branch>
     ) {
-      const { list, byId } = organizeState<Branch>(state, [action.payload]);
+      const { list, byId } = rightHandMergeState<Branch>(state, [
+        action.payload,
+      ]);
+
+      state.list = list;
+      state.byId = byId;
+    },
+
+    sagaClearChildBranches(state: BranchState, action: PayloadAction<string>) {
+      const list = state.list.filter(
+        (item: Branch) => item.parent !== action.payload
+      );
+      const byId = organizeById(list);
 
       state.list = list;
       state.byId = byId;
@@ -43,7 +59,7 @@ export const branches = createSlice({
       state: BranchState,
       action: PayloadAction<Branch[]>
     ) {
-      const { list, byId } = organizeState<Branch>(state, action.payload);
+      const { list, byId } = rightHandMergeState<Branch>(state, action.payload);
 
       state.list = list;
       state.byId = byId;
@@ -54,7 +70,7 @@ export const branches = createSlice({
       state: BranchState,
       action: PayloadAction<Branch[]>
     ) {
-      const { list, byId } = organizeState(state, action.payload);
+      const { list, byId } = rightHandMergeState(state, action.payload);
 
       state.list = list;
       state.byId = byId;
@@ -81,7 +97,10 @@ export const branches = createSlice({
       state: BranchState,
       action: PayloadAction<{ branches: Branch[] }>
     ) => {
-      const { list, byId } = organizeState(state, action.payload.branches);
+      const { list, byId } = rightHandMergeState(
+        state,
+        action.payload.branches
+      );
 
       state.list = list;
       state.byId = byId;
@@ -92,7 +111,7 @@ export const branches = createSlice({
       state: BranchState,
       action: PayloadAction<Branch>
     ) => {
-      const { list, byId } = organizeState(state, [action.payload]);
+      const { list, byId } = rightHandMergeState(state, [action.payload]);
 
       state.list = list;
       state.byId = byId;
@@ -122,6 +141,7 @@ export const {
   sagaFetchById,
   sagaModifyBranchComplete,
   uiClearCurrentBranch,
+  sagaClearChildBranches,
 } = branches.actions;
 
 // Selectors

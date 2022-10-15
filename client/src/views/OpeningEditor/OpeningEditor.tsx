@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { ChessInstance } from "chess.js";
 import "./OpeningEditor.scss";
-import { MoveData } from "../../types/types";
+import { getUpdatedBreadcrumbs } from "./utils";
+import { ModifyActions, MoveData } from "../../types/types";
 import EditableTitle from "../../components/EditableTitle/EditableTitle";
 import ChessBoard from "../../components/Chess/ChessBoard/ChessBoard";
 import Dashboard from "../../components/Layouts/Dashboard/Dashboard";
@@ -16,43 +17,12 @@ import {
   uiFetchByParentId,
 } from "../../redux/branches/slice";
 import { useLocation, Location } from "react-router-dom";
-import { Branch as BranchType } from "../../types/types";
-import { EditorLocationState, Breadcrumb } from "./types";
+import { Branch as BranchType, Breadcrumb } from "../../types/types";
+import { EditorLocationState } from "./types";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
+import { ModifyBranchActionPayload } from "../../redux/branches/types";
 
 const Chess = require("chess.js");
-
-const getUpdatedBreadcrumbs = (
-  currentBreadcrumbs: Breadcrumb[],
-  selectedBranch: BranchType
-): Breadcrumb[] => {
-  let currentBreadcrumbsCopy: Breadcrumb[] = [...currentBreadcrumbs];
-  let newBreadcrumbs: Breadcrumb[] = [];
-
-  const currentBranchBreadcrumbIndex = currentBreadcrumbsCopy.findIndex(
-    (breadcrumb) => {
-      return breadcrumb._id === selectedBranch._id;
-    }
-  );
-
-  if (currentBranchBreadcrumbIndex >= 0) {
-    newBreadcrumbs = currentBreadcrumbsCopy.slice(
-      0,
-      currentBranchBreadcrumbIndex + 1
-    );
-  } else {
-    if (selectedBranch._id) {
-      newBreadcrumbs = currentBreadcrumbsCopy;
-
-      newBreadcrumbs.push({
-        _id: selectedBranch._id,
-        label: selectedBranch.title,
-      });
-    }
-  }
-
-  return newBreadcrumbs;
-};
 
 const { Title } = Typography;
 
@@ -134,17 +104,13 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
         populateMoves(currentBranch.mainLine);
       }
 
-      setPosition(startingPosition);
-    }
-  }, [currentBranch?._id]);
-
-  useEffect(() => {
-    if (currentBranch) {
       const updatedBreadcrumbs = getUpdatedBreadcrumbs(
         breadcrumbs,
         currentBranch
       );
       setBreadcrumbs(updatedBreadcrumbs);
+
+      setPosition(startingPosition);
     }
   }, [currentBranch?._id]);
 
@@ -162,7 +128,7 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
 
     if (moveValid) {
       updateBoard();
-      modifyCurrentBranch();
+      modifyCurrentBranch(ModifyActions.AddMove);
     }
   };
 
@@ -174,7 +140,7 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
   const onUndo = () => {
     chess?.undo();
     updateBoard();
-    modifyCurrentBranch();
+    modifyCurrentBranch(ModifyActions.UndoMove);
   };
 
   const createNewOpening = () => {
@@ -189,16 +155,17 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
     uiAddBranch(openingDetails);
   };
 
-  const modifyCurrentBranch = () => {
+  const modifyCurrentBranch = (actionType: ModifyActions) => {
     if (currentBranch) {
-      const openingDetails: BranchType = {
+      const modificationData: ModifyBranchActionPayload = {
         _id: currentBranch._id,
         title,
         mainLine: chess?.history(),
         endPosition: chess?.fen(),
+        actionType,
       };
 
-      uiModifyBranch(openingDetails);
+      uiModifyBranch(modificationData);
     }
   };
 
@@ -210,12 +177,14 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
           <EditableTitle
             title={title}
             onChange={(e) => setTitle((e.target as HTMLInputElement).value)}
-            onEditingComplete={modifyCurrentBranch}
+            onEditingComplete={() =>
+              modifyCurrentBranch(ModifyActions.RenameBranch)
+            }
           />
         </div>
       </Card>
 
-      <Breadcrumbs items={breadcrumbs} />
+      <Breadcrumbs items={breadcrumbs} currentBranchTitle={title} />
 
       <div className="opening-editor__main">
         <ChessBoard
@@ -226,7 +195,6 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
           position={position}
         />
         <History
-          chess={chess}
           currentPositionFen={position}
           title="Main line"
           history={history}

@@ -3,6 +3,7 @@ import { body, param } from "express-validator";
 import validateRequest from "../helpers/validateRequest";
 import branchService from "../services/Branch";
 import requireAuth from "../middlewares/requireAuth";
+import { ModifyActions } from "../types/types";
 
 const branch: Router = express.Router();
 
@@ -31,6 +32,13 @@ branch.post(
   body("mainLine").optional({ nullable: true }),
   body("startPosition").optional({ nullable: true }),
   body("endPosition").optional({ nullable: true }),
+  body("actionType")
+    .isString()
+    .isIn([
+      ModifyActions.UndoMove,
+      ModifyActions.AddMove,
+      ModifyActions.RenameBranch,
+    ]),
   async (req: Request, res: Response) => {
     validateRequest(req);
 

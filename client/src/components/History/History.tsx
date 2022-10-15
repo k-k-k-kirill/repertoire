@@ -21,7 +21,6 @@ interface HistoryProps {
   history: string[];
   title: string;
   onUndo: () => void;
-  chess: any;
   currentPositionFen: string | undefined;
   onBoardEnabledChange: (boardEnabledState: boolean) => void;
 }
@@ -32,19 +31,9 @@ const History: React.FC<HistoryProps> = ({
   history,
   title,
   onUndo,
-  chess,
   currentPositionFen,
   onBoardEnabledChange,
 }) => {
-  const getDisplayedChildBranches = useCallback(
-    (allBranchs: Branch[], fenOfCurrentPosition: string | undefined) => {
-      return allBranchs.filter(
-        (branch) => branch.startPosition === fenOfCurrentPosition
-      );
-    },
-    [currentPositionFen]
-  );
-
   const dispatch = useDispatch();
 
   const currentBranch = useSelector((state: { branches: BranchState }) =>
@@ -56,7 +45,10 @@ const History: React.FC<HistoryProps> = ({
   const [displayedChildBranches, setDisplayedChildBranches] = useState<
     Branch[]
   >([]);
+
   const [showUndoButton, setShowUndoButton] = useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [newBranchName, setNewBranchName] = useState<string>("");
 
   useEffect(() => {
     if (currentBranch) {
@@ -81,9 +73,6 @@ const History: React.FC<HistoryProps> = ({
     }
   }, [displayedChildBranches]);
 
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [newBranchName, setNewBranchName] = useState<string>("");
-
   const handleAddBranchClick = useCallback(() => {
     setModalVisible(false);
 
@@ -97,7 +86,17 @@ const History: React.FC<HistoryProps> = ({
         owner: null,
       })
     );
-  }, [dispatch, newBranchName, chess, history, currentBranch]);
+  }, [dispatch, newBranchName, history, currentBranch]);
+
+  const getDisplayedChildBranches = useCallback(
+    (allBranchs: Branch[], fenOfCurrentPosition: string | undefined) => {
+      console.log(fenOfCurrentPosition);
+      return allBranchs.filter(
+        (branch) => branch.startPosition === fenOfCurrentPosition
+      );
+    },
+    [currentPositionFen, currentBranch?._id]
+  );
 
   const onBranchMenuItemClick = (branchId: string) => {
     dispatch(uiSetCurrentBranch(branchId));
@@ -122,7 +121,10 @@ const History: React.FC<HistoryProps> = ({
                 <Dropdown
                   overlay={
                     <Menu>
-                      <Menu.Item onClick={() => setModalVisible(true)}>
+                      <Menu.Item
+                        key="service"
+                        onClick={() => setModalVisible(true)}
+                      >
                         <PlusOutlined />
                         {"  "}Add branch
                       </Menu.Item>

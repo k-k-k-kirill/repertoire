@@ -21,11 +21,12 @@ import {
   sagaFetchByIdComplete,
   sagaFetchById,
   sagaModifyBranchComplete,
+  sagaClearChildBranches,
 } from "./slice";
 import { uiSetNotification } from "../notification/slice";
 import { take, put } from "redux-saga/effects";
 import branchStorage from "../../storage/Branch";
-import { Branch } from "../../types/types";
+import { Branch, ModifyActions } from "../../types/types";
 import { callWithTokenRefresh } from "../utils/callWithTokenRefresh";
 
 function* openingSaga() {
@@ -137,6 +138,13 @@ function* watchModifyBranch() {
       );
 
       yield put(sagaModifyBranchComplete(modifiedBranch));
+
+      if (
+        action.payload.actionType === ModifyActions.UndoMove &&
+        modifiedBranch._id
+      ) {
+        yield put(sagaClearChildBranches(modifiedBranch._id));
+      }
     }
   }
 }

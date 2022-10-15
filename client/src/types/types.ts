@@ -15,3 +15,14 @@ export interface Branch {
   parent?: string | null;
   owner?: string | null;
 }
+
+export interface Breadcrumb {
+  _id: string;
+  label: string;
+}
+
+export enum ModifyActions {
+  UndoMove = "undoMove",
+  AddMove = "addMove",
+  RenameBranch = "renameBranch",
+}

@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
+import { useLocation, Location } from "react-router-dom";
 import Dashboard from "../../components/Layouts/Dashboard/Dashboard";
 import OpeningList from "../../components/OpeningList/OpeningList";
 import { uiFetchOpenings } from "../../redux/branches/slice";
 import { getAllOpenings } from "../../redux/branches/slice";
 import { getIsAuthenticated } from "../../redux/session/slice";
 import { Branch } from "../../types/types";
+import { OpeningsLocationState } from "./types";
 import "./Openings.scss";
 
 interface OpeningsDispatchProps {
@@ -24,8 +26,12 @@ const Openings: React.FC<OpeningsProps> = ({
   openings,
   isAuthenticated,
 }) => {
+  const location: Location = useLocation();
+  const locationState: OpeningsLocationState =
+    location.state as OpeningsLocationState;
+
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !locationState) {
       uiFetchOpenings();
     }
   }, [isAuthenticated]);
