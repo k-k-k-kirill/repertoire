@@ -176,7 +176,12 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
         <div className="opening-editor__header__content">
           <EditableTitle
             title={title}
-            onChange={(e) => setTitle((e.target as HTMLInputElement).value)}
+            onChange={(e) => {
+              const newTitle = (e.target as HTMLInputElement).value;
+              if (newTitle !== "") {
+                setTitle(newTitle);
+              }
+            }}
             onEditingComplete={() =>
               modifyCurrentBranch(ModifyActions.RenameBranch)
             }

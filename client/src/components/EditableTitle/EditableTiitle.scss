@@ -24,8 +24,15 @@
     align-items: center;
 
     input {
+      padding: 0;
       width: auto !important;
       min-width: 50%;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    svg {
+      font-size: 1.2rem;
     }
   }
 }
