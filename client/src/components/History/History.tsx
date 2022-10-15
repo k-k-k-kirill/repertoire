@@ -107,8 +107,15 @@ const History: React.FC<HistoryProps> = ({
       <Title level={5}>{title}</Title>
 
       {history.map((item, index) => (
-        <div className="history__move" key={item}>
-          <span>{item}</span>
+        <div
+          className={`history__move ${
+            (index + 1) % 2 > 0 ? "" : "history__move--black"
+          }`}
+          key={item}
+        >
+          <span>
+            {index + 1}. {item}
+          </span>
           {index === history.length - 1 && (
             <>
               {showUndoButton && (
