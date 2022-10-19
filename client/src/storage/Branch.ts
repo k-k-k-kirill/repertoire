@@ -33,6 +33,10 @@ class Branch extends BaseStorage {
   modify = async (params: BranchType) => {
     return api.post(`/${this.module}/modify`, params);
   };
+
+  delete = async (id: string) => {
+    return api.delete(`/${this.module}/${id}`);
+  };
 }
 
 export default new Branch();

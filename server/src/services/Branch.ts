@@ -1,4 +1,3 @@
-import NotFoundError from "../errors/NotFoundError";
 import BranchModel from "../models/Branch/Branch";
 import {
   BranchData,
@@ -63,6 +62,10 @@ class Branch {
     await BranchModel.deleteMany({
       parent: parentId,
     });
+  };
+
+  delete = async (branchId: string) => {
+    await BranchModel.deleteOne({ _id: branchId });
   };
 }
 

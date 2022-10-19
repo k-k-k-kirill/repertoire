@@ -12,10 +12,11 @@ import {
   getCurrentBranch,
   getChildrenForCurrentBranch,
   uiSetCurrentBranch,
+  uiDeleteBranch,
 } from "../../redux/branches/slice";
 import { BranchState } from "../../redux/branches/types";
 import { Branch } from "../../types/types";
-import { Link } from "react-router-dom";
+import withConfirmationDialog from "../../hoc/withConfirmationDialog";
 
 interface HistoryProps {
   history: string[];
@@ -23,6 +24,7 @@ interface HistoryProps {
   onUndo: () => void;
   currentPositionFen: string | undefined;
   onBoardEnabledChange: (boardEnabledState: boolean) => void;
+  confirmAction: any;
 }
 
 const { Title } = Typography;
@@ -33,6 +35,7 @@ const History: React.FC<HistoryProps> = ({
   onUndo,
   currentPositionFen,
   onBoardEnabledChange,
+  confirmAction,
 }) => {
   const dispatch = useDispatch();
 
@@ -63,7 +66,7 @@ const History: React.FC<HistoryProps> = ({
         setDisplayedChildBranches(branchesToDisplay);
       }
     }
-  }, [currentBranch?._id, currentPositionFen]);
+  }, [currentBranch?._id, currentPositionFen, childBranches?.length]);
 
   useEffect(() => {
     if (displayedChildBranches.length > 0) {
@@ -90,7 +93,6 @@ const History: React.FC<HistoryProps> = ({
 
   const getDisplayedChildBranches = useCallback(
     (allBranchs: Branch[], fenOfCurrentPosition: string | undefined) => {
-      console.log(fenOfCurrentPosition);
       return allBranchs.filter(
         (branch) => branch.startPosition === fenOfCurrentPosition
       );
@@ -136,12 +138,11 @@ const History: React.FC<HistoryProps> = ({
                         {"  "}Add branch
                       </Menu.Item>
                       {displayedChildBranches.map((branch: Branch) => (
-                        <Link
-                          to={`/openings/edit`}
-                          state={{ branchId: branch._id }}
+                        <Menu.Item
+                          className="history__child-branch"
+                          key={`branch-${branch._id}`}
                         >
-                          <Menu.Item
-                            key={`branch-${branch._id}`}
+                          <div
                             onClick={() => {
                               onBranchMenuItemClick(
                                 branch._id || currentBranch._id
@@ -149,8 +150,18 @@ const History: React.FC<HistoryProps> = ({
                             }}
                           >
                             {branch.title}
-                          </Menu.Item>
-                        </Link>
+                          </div>
+
+                          <CloseCircleOutlined
+                            onClick={() =>
+                              confirmAction(
+                                "Delete branch",
+                                "Are you sure?",
+                                () => dispatch(uiDeleteBranch(branch._id || ""))
+                              )
+                            }
+                          />
+                        </Menu.Item>
                       ))}
                     </Menu>
                   }
@@ -182,4 +193,4 @@ const History: React.FC<HistoryProps> = ({
   );
 };
 
-export default History;
+export default withConfirmationDialog(History);

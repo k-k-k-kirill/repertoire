@@ -9,7 +9,7 @@ import {
   UiFetchByParentIdAction,
   SagaFetchBranchesAction,
   SagaFetchByIdAction,
-  UiClearCurrentBranch,
+  UiDeleteBranchAction,
 } from "./actions";
 import {
   sagaFetchOpenings,
@@ -22,9 +22,11 @@ import {
   sagaFetchById,
   sagaModifyBranchComplete,
   sagaClearChildBranches,
+  getBranchById,
+  sagaFetchByParentId,
 } from "./slice";
 import { uiSetNotification } from "../notification/slice";
-import { take, put } from "redux-saga/effects";
+import { take, put, select } from "redux-saga/effects";
 import branchStorage from "../../storage/Branch";
 import { Branch, ModifyActions } from "../../types/types";
 import { callWithTokenRefresh } from "../utils/callWithTokenRefresh";
@@ -151,18 +153,44 @@ function* watchModifyBranch() {
 
 function* watchFetchByParentId() {
   while (true) {
-    const action: UiFetchByParentIdAction = yield take(
-      UiAction.FetchByParentId
-    );
+    const action: UiFetchByParentIdAction = yield take([
+      UiAction.FetchByParentId,
+      SagaAction.FetchByParentId,
+    ]);
 
-    if (action.type === UiAction.FetchByParentId) {
+    if (
+      action.type === UiAction.FetchByParentId ||
+      action.type === SagaAction.FetchByParentId
+    ) {
       const branches: Branch[] = yield callWithTokenRefresh(
         branchStorage.getByParentId,
         action.payload.parentId
       );
 
       yield put(sagaFetchById(action.payload.parentId));
+      yield put(sagaClearChildBranches(action.payload.parentId));
       yield put(sagaFetchByParentIdComplete({ branches }));
+    }
+  }
+}
+
+function* watchDeleteBranch() {
+  while (true) {
+    const action: UiDeleteBranchAction = yield take(UiAction.DeleteBranch);
+
+    if (action.type === UiAction.DeleteBranch) {
+      yield callWithTokenRefresh(branchStorage.delete, action.payload);
+      const branch: Branch = yield select((state) =>
+        getBranchById(state, action.payload)
+      );
+
+      if (branch && !branch?.parent) {
+        yield put(sagaFetchOpenings());
+      } else {
+        if (branch && branch?.parent) {
+          yield put(sagaFetchByParentId({ parentId: branch?.parent }));
+        }
+      }
     }
   }
 }
@@ -175,6 +203,7 @@ const branchSagas = [
   watchFetchByParentId,
   watchFetchBranches,
   watchFetchById,
+  watchDeleteBranch,
 ];
 
 export default branchSagas;

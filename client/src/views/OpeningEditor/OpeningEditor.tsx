@@ -171,7 +171,6 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
 
   return (
     <Dashboard>
-      <Title level={3}>Opening editor</Title>
       <Card className="opening-editor__header">
         <div className="opening-editor__header__content">
           <EditableTitle

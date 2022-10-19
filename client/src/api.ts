@@ -18,6 +18,15 @@ class Api {
     });
     return response.data;
   };
+
+  delete = async (url: string) => {
+    const response = await axios.delete(url, {
+      headers: {
+        Authorization: sessionStorage.getItem("accessToken") || "",
+      },
+    });
+    return response.data;
+  };
 }
 
 export default new Api();

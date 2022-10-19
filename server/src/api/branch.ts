@@ -94,4 +94,20 @@ branch.get("/all", requireAuth, async (req: any, res: Response) => {
   res.status(200).send(branches);
 });
 
+branch.delete(
+  "/:id",
+  param("id")
+    .exists()
+    .isString()
+    .withMessage("Valid branch id must be provided"),
+  requireAuth,
+  async (req: any, res: Response) => {
+    validateRequest(req);
+
+    await branchService.delete(req.params.id);
+
+    res.status(204).send();
+  }
+);
+
 export default branch;

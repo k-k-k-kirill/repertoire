@@ -25,4 +25,15 @@
       background-color: #f0f0f0;
     }
   }
+
+  &__child-branch {
+    .ant-dropdown-menu-title-content {
+      display: flex;
+      align-items: center;
+
+      svg {
+        margin-left: 0.5rem;
+      }
+    }
+  }
 }

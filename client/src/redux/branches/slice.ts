@@ -59,7 +59,8 @@ export const branches = createSlice({
       state: BranchState,
       action: PayloadAction<Branch[]>
     ) {
-      const { list, byId } = rightHandMergeState<Branch>(state, action.payload);
+      const list = action.payload;
+      const byId = organizeById(list);
 
       state.list = list;
       state.byId = byId;
@@ -93,6 +94,10 @@ export const branches = createSlice({
         parentId: string;
       }>
     ) => {},
+    sagaFetchByParentId: (
+      state: BranchState,
+      action: PayloadAction<{ parentId: string }>
+    ) => {},
     sagaFetchByParentIdComplete: (
       state: BranchState,
       action: PayloadAction<{ branches: Branch[] }>
@@ -120,6 +125,8 @@ export const branches = createSlice({
     uiClearCurrentBranch: (state: BranchState, action: Action) => {
       state.current = null;
     },
+
+    uiDeleteBranch: (state: BranchState, action: PayloadAction<string>) => {},
   },
 });
 
@@ -133,6 +140,7 @@ export const {
   uiModifyBranch,
   sagaFetchOpenings,
   uiFetchByParentId,
+  sagaFetchByParentId,
   sagaFetchByParentIdComplete,
   sagaFetchBranches,
   sagaFetchBranchesComplete,
@@ -142,6 +150,7 @@ export const {
   sagaModifyBranchComplete,
   uiClearCurrentBranch,
   sagaClearChildBranches,
+  uiDeleteBranch,
 } = branches.actions;
 
 // Selectors

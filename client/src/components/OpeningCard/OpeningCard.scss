@@ -4,6 +4,8 @@
   min-height: 64px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding-right: 1rem;
 
   &__image {
     width: 100px;
@@ -14,7 +16,16 @@
     margin-bottom: 0 !important;
   }
 
+  &__content {
+    display: flex;
+    align-items: center;
+  }
+
   &:hover {
     cursor: pointer;
+  }
+
+  svg {
+    color: #000;
   }
 }
