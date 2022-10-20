@@ -1,11 +1,11 @@
 .opening-card {
-  margin-bottom: 1rem;
   background-color: #fff;
   min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-right: 1rem;
+  flex-grow: 1;
 
   &__image {
     width: 100px;
@@ -19,6 +19,7 @@
   &__content {
     display: flex;
     align-items: center;
+    flex-grow: 1;
   }
 
   &:hover {

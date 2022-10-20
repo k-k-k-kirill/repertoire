@@ -31,21 +31,11 @@ import branchStorage from "../../storage/Branch";
 import { Branch, ModifyActions } from "../../types/types";
 import { callWithTokenRefresh } from "../utils/callWithTokenRefresh";
 
-function* openingSaga() {
+function* watchAddBranch() {
   while (true) {
-    const action:
-      | UiFetchOpeningsAction
-      | UiAddBranchAction
-      | UiModifyBranchAction = yield take([
-      UiAction.FetchOpenings,
-      UiAction.AddBranch,
-      UiAction.ModifyBranch,
-      SagaAction.FetchOpenings,
-    ]);
+    const action: UiAddBranchAction = yield take([UiAction.AddBranch]);
 
-    if (action.type === UiAction.FetchOpenings) {
-      yield put(sagaFetchOpenings());
-    } else if (action.type === UiAction.AddBranch) {
+    if (action.type === UiAction.AddBranch) {
       try {
         const branch: Branch = yield callWithTokenRefresh(
           branchStorage.add,
@@ -102,11 +92,15 @@ function* watchFetchBranches() {
 
 function* watchFetchOpenings() {
   while (true) {
-    const action: SagaFetchOpeningsAction = yield take(
-      SagaAction.FetchOpenings
-    );
+    const action: SagaFetchOpeningsAction | UiFetchOpeningsAction = yield take([
+      SagaAction.FetchOpenings,
+      UiAction.FetchOpenings,
+    ]);
 
-    if (action.type === SagaAction.FetchOpenings) {
+    if (
+      action.type === SagaAction.FetchOpenings ||
+      action.type === UiAction.FetchOpenings
+    ) {
       const openings: Branch[] = yield callWithTokenRefresh(
         branchStorage.getOpenings
       );
@@ -167,7 +161,6 @@ function* watchFetchByParentId() {
         action.payload.parentId
       );
 
-      yield put(sagaFetchById(action.payload.parentId));
       yield put(sagaClearChildBranches(action.payload.parentId));
       yield put(sagaFetchByParentIdComplete({ branches }));
     }
@@ -196,7 +189,7 @@ function* watchDeleteBranch() {
 }
 
 const branchSagas = [
-  openingSaga,
+  watchAddBranch,
   watchFetchOpenings,
   watchSetCurrentBranch,
   watchModifyBranch,

@@ -155,8 +155,8 @@ const History: React.FC<HistoryProps> = ({
                           <CloseCircleOutlined
                             onClick={() =>
                               confirmAction(
-                                "Delete branch",
-                                "Are you sure?",
+                                `Remove branch ${branch.title}`,
+                                `Are you sure you want to remove branch ${branch.title}?`,
                                 () => dispatch(uiDeleteBranch(branch._id || ""))
                               )
                             }

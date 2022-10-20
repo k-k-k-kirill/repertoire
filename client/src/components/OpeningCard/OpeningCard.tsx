@@ -22,10 +22,14 @@ const OpeningCard: React.FC<OpeningCardProps> = ({
 }) => {
   const dispatch = useDispatch();
 
-  const onOpeningDeleteClick = (branchId: string) => {
-    confirmAction("Delete this opening?", "Are you sure?", () =>
-      dispatch(uiDeleteBranch(branchId))
-    );
+  const onOpeningDeleteClick = (opening: Branch) => {
+    if (opening._id) {
+      confirmAction(
+        `Remove opening ${opening.title}`,
+        `Are you sure you want to remove opening ${opening.title}?`,
+        () => dispatch(uiDeleteBranch(opening._id || ""))
+      );
+    }
   };
 
   return (
@@ -44,7 +48,7 @@ const OpeningCard: React.FC<OpeningCardProps> = ({
           </div>
         </Link>
         <CloseCircleOutlined
-          onClick={() => onOpeningDeleteClick(opening._id || "")}
+          onClick={() => onOpeningDeleteClick(opening)}
           style={{ fontSize: "120%" }}
         />
       </div>
