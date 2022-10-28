@@ -1,10 +1,21 @@
 import mongoose from "mongoose";
 import config from "../config";
+import Seeder from "../services/Seeder";
 
 export default async () => {
   try {
-    const databaseUrl = `mongodb+srv://${config.DATABASE_USER}:${config.DATABASE_PASSWORD}@${config.DATABASE_HOST}/${config.DATABASE_NAME}?retryWrites=true&w=majority`;
-    await mongoose.connect(databaseUrl);
+    const isTesting = config.ENVIRONMENT === "test";
+    const dbCredentials = {
+      user: config.DATABASE_USER,
+      password: config.DATABASE_PASSWORD,
+      host: config.DATABASE_HOST,
+      database: config.DATABASE_NAME,
+    };
+
+    const testingUrl = "mongodb://root:rootpassword@localhost:27017/";
+    const databaseUrl = `mongodb+srv://${dbCredentials.user}:${dbCredentials.password}@${dbCredentials.host}/${dbCredentials.database}?retryWrites=true&w=majority`;
+
+    await mongoose.connect(isTesting ? testingUrl : databaseUrl);
 
     console.log("Successfully connected to database!");
   } catch (error) {

@@ -19,7 +19,6 @@ import {
   sagaFetchBranchesComplete,
   sagaAddBranchComplete,
   sagaFetchByIdComplete,
-  sagaFetchById,
   sagaModifyBranchComplete,
   sagaClearChildBranches,
   getBranchById,
