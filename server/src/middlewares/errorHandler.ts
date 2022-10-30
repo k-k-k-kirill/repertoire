@@ -8,7 +8,7 @@ export default (
   res: Response,
   next: NextFunction
 ) => {
-  if (config.ENVIRONMENT === "development") {
+  if (config.ENVIRONMENT === "development" || config.ENVIRONMENT === "test") {
     console.log(err);
   }
 
@@ -16,7 +16,7 @@ export default (
     return res.status(err.statusCode).send({ errors: err.serializeErrors() });
   }
 
-  res.status(400).send({
+  res.status(500).send({
     errors: [{ message: "Something went wrong." }],
   });
 };

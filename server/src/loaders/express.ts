@@ -5,7 +5,6 @@ import router from "../api/index";
 import errorHandler from "../middlewares/errorHandler";
 import NotFoundError from "../errors/NotFoundError";
 import cookieParser from "cookie-parser";
-import config from "../config";
 
 export default (app: Application) => {
   app.use(express.json());

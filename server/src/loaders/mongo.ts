@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import config from "../config";
-import Seeder from "../services/Seeder";
 
 export default async () => {
   try {
