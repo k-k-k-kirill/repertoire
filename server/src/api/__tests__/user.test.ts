@@ -1,10 +1,14 @@
 import supertest from "supertest";
 import app from "../../app";
 import mongoose from "mongoose";
+import testingDatabaseService from "../../services/TestingDatabase";
 
 beforeAll(async () => {
-  const testingUrl = "mongodb://root:rootpassword@localhost:27017/";
-  await mongoose.connect(testingUrl);
+  await testingDatabaseService.connectToTestingDatabase();
+});
+
+afterAll(async () => {
+  await testingDatabaseService.disconnectFromTestingDatabase();
 });
 
 describe("This is test of testing", () => {
@@ -17,8 +21,4 @@ describe("This is test of testing", () => {
       })
       .expect(200);
   });
-});
-
-afterAll(async () => {
-  await mongoose.connection.close();
 });
