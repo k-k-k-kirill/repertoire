@@ -8,8 +8,9 @@
     "start": "nodemon src/server.ts",
     "build": "tsc -p .",
     "start-test-db": "docker-compose up -d",
-    "stop-test-db": "docker-compose stop && docker compose rm --force",
-    "test": "yarn start-test-db; env ENVIRONMENT=test yarn jest --runInBand; yarn stop-test-db"
+    "stop-test-db": "docker compose stop && docker compose rm --force",
+    "test": "yarn start-test-db; env ENVIRONMENT=test yarn jest --runInBand; yarn stop-test-db",
+    "test-watch": "yarn start-test-db; env ENVIRONMENT=test yarn jest --runInBand --watch; yarn stop-test-db"
   },
   "keywords": [],
   "author": "",

@@ -62,6 +62,14 @@ class User {
       throw new UnauthorizedError();
     }
   };
+
+  public checkIfUserExists = async (email: string) => {
+    const user = await UserModel.findOne({
+      email,
+    });
+
+    return !!user;
+  };
 }
 
 export default new User();

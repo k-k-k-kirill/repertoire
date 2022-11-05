@@ -50,7 +50,12 @@ export default class JWT {
   };
 
   refreshToken = async (oldAccessToken: string, refreshToken: string) => {
-    const { userId } = this.decode(refreshToken);
+    const userId = this.decode(refreshToken)?.userId;
+
+    if (!userId) {
+      throw new UnauthorizedError();
+    }
+
     const user = await UserModel.findOne({ _id: userId });
 
     if (!user) {
@@ -60,8 +65,8 @@ export default class JWT {
     const { password } = user;
     const refreshSecret = `${this.refreshSecret}${password}`;
     const refreshTokenValid = this.verify(refreshToken, refreshSecret);
-    const refreshTokenContextValid = this.verifyContext(refreshToken);
-    const oldAccessTokenContextValid = this.verifyContext(oldAccessToken);
+    const refreshTokenContextValid = await this.verifyContext(refreshToken);
+    const oldAccessTokenContextValid = await this.verifyContext(oldAccessToken);
 
     if (
       !refreshTokenValid ||
@@ -115,11 +120,15 @@ export default class JWT {
   getFingerprint = () => this.fingerprint;
 
   verifyContext = async (token: string) => {
-    const valid = await bcrypt.compare(
-      this.getFingerprint(),
-      this.decode(token).context
-    );
+    try {
+      const valid = await bcrypt.compare(
+        this.getFingerprint(),
+        this.decode(token)?.context
+      );
 
-    return valid;
+      return valid;
+    } catch (e) {
+      throw new UnauthorizedError();
+    }
   };
 }
