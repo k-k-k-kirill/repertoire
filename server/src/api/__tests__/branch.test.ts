@@ -1,7 +1,7 @@
 import supertest from "supertest";
 import app from "../../app";
 import testingDatabaseService from "../../services/TestingDatabase";
-import testUserDetails from "../../tests/fixtures/userDetails";
+import testUsers from "../../tests/fixtures/userDetails";
 import { ModifyActions } from "../../types/types";
 
 let cookie = "";
@@ -12,6 +12,8 @@ let grandChildBranchId = "";
 
 beforeAll(async () => {
   await testingDatabaseService.connectToTestingDatabase();
+
+  const testUserDetails = testUsers[0];
 
   const response = await supertest(app).post("/user/login").send({
     email: testUserDetails.email,

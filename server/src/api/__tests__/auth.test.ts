@@ -1,11 +1,12 @@
 import supertest from "supertest";
 import app from "../../app";
-import testUserDetails from "../../tests/fixtures/userDetails";
+import testUsers from "../../tests/fixtures/userDetails";
 import testingDatabaseService from "../../services/TestingDatabase";
 
 let cookie = "";
 let accessToken = "";
 let refreshToken = "";
+const testUserDetails = testUsers[0];
 
 beforeAll(async () => {
   await testingDatabaseService.connectToTestingDatabase();

@@ -1,20 +1,22 @@
 import userService from "../services/User";
-import testUserDetails from "../tests/fixtures/userDetails";
+import testUsers from "../tests/fixtures/userDetails";
 
 class Seeder {
   static seedDb = async () => {
     try {
-      const userExists = await userService.checkIfUserExists(
-        testUserDetails.email
-      );
+      const promises = testUsers.map(async (user) => {
+        const userExists = await userService.checkIfUserExists(user.email);
 
-      if (!userExists) {
-        await userService.signUp(
-          testUserDetails.email,
-          testUserDetails.password,
-          testUserDetails.username
-        );
-      }
+        if (!userExists) {
+          return await userService.signUp(
+            user.email,
+            user.password,
+            user.username
+          );
+        }
+      });
+
+      Promise.all(promises);
     } catch (err) {
       console.log(err);
     }

@@ -1,7 +1,8 @@
 import express, { Router, Request, Response } from "express";
 import userService from "../services/User";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 import validateRequest from "../helpers/validateRequest";
+import requireAuth from "../middlewares/requireAuth";
 
 const user: Router = express.Router();
 
@@ -47,6 +48,21 @@ user.post(
       accessToken,
       refreshToken,
     });
+  }
+);
+
+user.delete(
+  "/:id",
+  param("id").exists().isString().withMessage("Valid user id must be provided"),
+  requireAuth,
+  async (req: any, res: Response) => {
+    validateRequest(req);
+
+    if (req.user.id !== req.params.id) res.status(403).send();
+
+    await userService.delete(req.user.id);
+
+    res.status(204).send();
   }
 );
 

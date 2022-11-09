@@ -4,6 +4,7 @@ import JWT from "../services/JWT";
 import UserExistsError from "../errors/UserExistsError";
 import UserNotFoundError from "../errors/UserNotFoundError";
 import UnauthorizedError from "../errors/UnauthorizedError";
+import NotFoundError from "../errors/NotFoundError";
 
 class User {
   passwordService: any;
@@ -69,6 +70,10 @@ class User {
     });
 
     return !!user;
+  };
+
+  public delete = async (id: string) => {
+    await UserModel.deleteOne({ _id: id });
   };
 }
 

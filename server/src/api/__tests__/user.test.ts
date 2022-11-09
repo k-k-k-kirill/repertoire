@@ -1,7 +1,9 @@
 import supertest from "supertest";
 import app from "../../app";
 import testingDatabaseService from "../../services/TestingDatabase";
-import testUserDetails from "../../tests/fixtures/userDetails";
+import testUsers from "../../tests/fixtures/userDetails";
+
+const testUserDetails = testUsers[0];
 
 beforeAll(async () => {
   await testingDatabaseService.connectToTestingDatabase();
