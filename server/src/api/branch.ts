@@ -12,9 +12,9 @@ branch.post(
   requireAuth,
   body("title").isString().withMessage("Missing opening title"),
   body("parent").isString().optional({ nullable: true }),
-  body("mainLine").optional({ nullable: true }),
-  body("startPosition").optional({ nullable: true }),
-  body("endPosition").optional({ nullable: true }),
+  body("mainLine").isArray().optional({ nullable: true }),
+  body("startPosition").isString().optional({ nullable: true }),
+  body("endPosition").isString().optional({ nullable: true }),
   async (req: any, res: Response) => {
     validateRequest(req);
 
@@ -29,9 +29,9 @@ branch.post(
   requireAuth,
   body("_id").isString().withMessage("Missing opening ID"),
   body("title").isString().withMessage("Missing opening title"),
-  body("mainLine").optional({ nullable: true }),
-  body("startPosition").optional({ nullable: true }),
-  body("endPosition").optional({ nullable: true }),
+  body("mainLine").isArray().optional({ nullable: true }),
+  body("startPosition").isString().optional({ nullable: true }),
+  body("endPosition").isString().optional({ nullable: true }),
   body("actionType")
     .isString()
     .isIn([

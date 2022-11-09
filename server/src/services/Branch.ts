@@ -1,3 +1,4 @@
+import NotFoundError from "../errors/NotFoundError";
 import BranchModel from "../models/Branch/Branch";
 import {
   BranchData,
@@ -54,6 +55,10 @@ class Branch {
 
   getById = async (id: string) => {
     const branch = await BranchModel.findOne({ _id: id });
+
+    if (!branch) {
+      throw new NotFoundError();
+    }
 
     return branch;
   };

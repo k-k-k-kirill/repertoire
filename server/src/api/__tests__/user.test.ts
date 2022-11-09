@@ -26,6 +26,36 @@ describe("User route tests /user/", () => {
     expect(response.header).toHaveProperty("set-cookie");
   });
 
+  test("Should return not found error if user doesn't exist", async () => {
+    await supertest(app)
+      .post("/user/login")
+      .send({
+        email: "email@wrong.com",
+        password: testUserDetails.password,
+      })
+      .expect(404);
+  });
+
+  test("Should return unauthorized error if wrong password is provided", async () => {
+    await supertest(app)
+      .post("/user/login")
+      .send({
+        email: testUserDetails.email,
+        password: "Password1234#",
+      })
+      .expect(401);
+  });
+
+  test("Should return bad request error if invalid email is provided", async () => {
+    await supertest(app)
+      .post("/user/login")
+      .send({
+        email: "test",
+        password: testUserDetails.password,
+      })
+      .expect(400);
+  });
+
   test("Should return conflict status when trying to sign up existing user", async () => {
     await supertest(app)
       .post("/user/signup")
