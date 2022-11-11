@@ -9,6 +9,7 @@ import FormError from "../FormError/FormError";
 import FiftyFifty from "../../Layouts/FiftyFifty/FiftyFifty";
 import userStorage from "../../../storage/User";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../../../hooks/useAuth";
 
 const { Title } = Typography;
 
@@ -36,23 +37,10 @@ const SignupSchema = Yup.object().shape({
 });
 
 const SignupForm: React.FC = () => {
-  const navigate = useNavigate();
+  const { signup } = useAuth();
 
-  const signUpUser = async (values: SignupFormValues) => {
-    try {
-      const { email, password } = values;
-      await userStorage.signUp(email, password);
-      const response = await userStorage.login(email, password);
-      const { accessToken, refreshToken } = response.data;
-
-      sessionStorage.setItem("accessToken", accessToken);
-      sessionStorage.setItem("refreshToken", refreshToken);
-
-      navigate("/dashboard");
-    } catch (error) {
-      throw new Error("Failed to login.");
-    }
-  };
+  const signUpUser = async (values: SignupFormValues) =>
+    signup(values.email!, values.password!);
 
   return (
     <Formik

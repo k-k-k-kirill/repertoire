@@ -6,11 +6,9 @@ import FormBlock from "../FormBlock/FormBlock";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import FormError from "../FormError/FormError";
-import userStorage from "../../../storage/User";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import FiftyFifty from "../../Layouts/FiftyFifty/FiftyFifty";
-import { connect } from "react-redux";
-import { uiSetIsAuthenticated } from "../../../redux/session/slice";
+import useAuth from "../../../hooks/useAuth";
 
 const { Title } = Typography;
 
@@ -24,34 +22,13 @@ const LoginSchema = Yup.object().shape({
   password: Yup.string().required("Password field is required."),
 });
 
-interface LoginFormDispatchProps {
-  uiSetIsAuthenticated: typeof uiSetIsAuthenticated;
-}
+interface LoginFormDispatchProps {}
 
-const LoginForm: React.FC<LoginFormDispatchProps> = ({
-  uiSetIsAuthenticated,
-}) => {
-  const navigate = useNavigate();
+const LoginForm: React.FC<LoginFormDispatchProps> = () => {
+  const { login } = useAuth();
 
-  const loginUser = async (values: LoginFormValues) => {
-    try {
-      const { email, password } = values;
-
-      const { accessToken, refreshToken } = await userStorage.login(
-        email,
-        password
-      );
-
-      sessionStorage.setItem("accessToken", accessToken);
-      sessionStorage.setItem("refreshToken", refreshToken);
-
-      uiSetIsAuthenticated(true);
-
-      navigate("/openings");
-    } catch (error) {
-      throw new Error("Failed to login.");
-    }
-  };
+  const loginUser = async (values: LoginFormValues) =>
+    login(values.email!, values.password!);
 
   return (
     <Formik
@@ -110,8 +87,4 @@ const LoginForm: React.FC<LoginFormDispatchProps> = ({
   );
 };
 
-const mapDispatchToProps = {
-  uiSetIsAuthenticated,
-};
-
-export default connect(null, mapDispatchToProps)(LoginForm);
+export default LoginForm;
