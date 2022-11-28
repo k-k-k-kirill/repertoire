@@ -1,0 +1,12 @@
+.mode-switch {
+  display: flex;
+  margin-bottom: 1rem;
+
+  &__item {
+    margin-right: 1rem;
+
+    &--active {
+      text-decoration: underline;
+    }
+  }
+}

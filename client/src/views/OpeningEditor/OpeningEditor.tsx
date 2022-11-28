@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { ChessInstance } from "chess.js";
 import "./OpeningEditor.scss";
-import { getUpdatedBreadcrumbs } from "./utils";
+import { getUpdatedBreadcrumbs } from "../../utils/getUpdatedBreadCrumbs";
 import { ModifyActions, MoveData } from "../../types/types";
 import EditableTitle from "../../components/EditableTitle/EditableTitle";
 import ChessBoard from "../../components/Chess/ChessBoard/ChessBoard";
 import Dashboard from "../../components/Layouts/Dashboard/Dashboard";
 import History from "../../components/History/History";
-import { Card, Typography } from "antd";
+import { Card } from "antd";
 import {
   uiAddBranch,
   uiModifyBranch,
@@ -21,10 +21,9 @@ import { Branch as BranchType, Breadcrumb } from "../../types/types";
 import { EditorLocationState } from "./types";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import { ModifyBranchActionPayload } from "../../redux/branches/types";
+import ModeSwitch from "../../components/ModeSwitch/ModeSwitch";
 
 const Chess = require("chess.js");
-
-const { Title } = Typography;
 
 interface OpeningEditorStateProps {
   currentBranch: BranchType;
@@ -87,7 +86,6 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
     if (selectedBranchId) {
       uiSetCurrentBranch(selectedBranchId);
       uiFetchByParentId({ parentId: selectedBranchId });
-      setSelectedBranchId(null);
     }
   }, [selectedBranchId]);
 
@@ -105,7 +103,7 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
       }
 
       const updatedBreadcrumbs = getUpdatedBreadcrumbs(
-        breadcrumbs,
+        selectedBranchId === currentBranch._id ? [] : breadcrumbs,
         currentBranch
       );
       setBreadcrumbs(updatedBreadcrumbs);
@@ -171,6 +169,8 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
 
   return (
     <Dashboard>
+      <ModeSwitch openingId={locationState?.branchId || ""} />
+
       <Card className="opening-editor__header">
         <div className="opening-editor__header__content">
           <EditableTitle

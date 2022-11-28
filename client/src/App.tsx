@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import Login from "./views/Login";
 import Openings from "./views/Openings/Openings";
 import OpeningEditor from "./views/OpeningEditor/OpeningEditor";
+import OpeningPractice from "./views/OpeningPractice/OpeningPractice";
 import { Routes, Route, useNavigate } from "react-router-dom";
 
 // Styles
@@ -29,6 +30,7 @@ const App: React.FC<AppStateProps> = ({ isAuthenticated }) => {
       <Route path="/openings" element={<Openings />} />
       <Route path="/openings/add" element={<OpeningEditor />} />
       <Route path="/openings/edit" element={<OpeningEditor />} />
+      <Route path="/openings/practice" element={<OpeningPractice />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/" element={<Login />} />
       <Route path="*" element={<Login />} />

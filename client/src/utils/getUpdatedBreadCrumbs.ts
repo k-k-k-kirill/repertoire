@@ -1,4 +1,4 @@
-import { Branch, Breadcrumb } from "../../types/types";
+import { Branch, Breadcrumb } from "../types/types";
 
 export const getUpdatedBreadcrumbs = (
   currentBreadcrumbs: Breadcrumb[],
@@ -19,11 +19,11 @@ export const getUpdatedBreadcrumbs = (
       currentBranchBreadcrumbIndex + 1
     );
   } else {
-    if (selectedBranch._id) {
+    if (selectedBranch?._id) {
       newBreadcrumbs = currentBreadcrumbsCopy;
 
       newBreadcrumbs.push({
-        _id: selectedBranch._id,
+        _id: selectedBranch?._id,
         label: selectedBranch.title,
       });
     }
