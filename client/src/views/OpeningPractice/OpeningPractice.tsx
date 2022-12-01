@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, Location } from "react-router-dom";
 import _ from "lodash";
@@ -15,11 +15,12 @@ import {
 import "./OpeningPractice.scss";
 import ChessBoard from "../../components/Chess/ChessBoard/ChessBoard";
 import { ChessInstance } from "chess.js";
-import { Branch, MoveData } from "../../types/types";
+import { Branch, MoveData, PositionComment } from "../../types/types";
 import { Breadcrumb } from "../../types/types";
 import { getUpdatedBreadcrumbs } from "../../utils/getUpdatedBreadCrumbs";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import { uiSetNotification } from "../../redux/notification/slice";
+import CommentBox from "../../components/CommentBox/CommentBox";
 
 const Chess = require("chess.js");
 
@@ -40,6 +41,7 @@ const OpeningPractice: React.FC = () => {
   const [position, setPosition] = useState<string | undefined>("start");
   const [boardEnabled, setBoardEnabled] = useState<boolean>(true);
   const [breadcrumbs, setBreadcrumbs] = useState<Breadcrumb[]>([]);
+  const [positionComment, setPositionComment] = useState<string>("");
 
   const moveCounter = useRef(0);
 
@@ -62,6 +64,16 @@ const OpeningPractice: React.FC = () => {
     setBreadcrumbs(updatedBreadcrumbs);
   }, [currentBranch?._id]);
 
+  useEffect(() => {
+    if (currentBranch) {
+      const currentPositionComment = currentBranch.comments?.find(
+        (comment: PositionComment) => comment.position === position
+      )?.comment;
+
+      setPositionComment(currentPositionComment ?? "");
+    }
+  }, [position]);
+
   const isMoveCorrect = (move: MoveData) => {
     makeSilentMove(move);
     const history = chess?.history();
@@ -73,8 +85,8 @@ const OpeningPractice: React.FC = () => {
   };
 
   const containsAll = (haystack: string[], needle: string[]) =>
-    needle.every((element) => {
-      return haystack.includes(element);
+    needle.every((element, index) => {
+      return haystack[index] === element;
     });
 
   const isMoveValid = (move: MoveData) => {
@@ -186,6 +198,7 @@ const OpeningPractice: React.FC = () => {
         onPieceDrop={onPieceDrop}
         position={position}
       />
+      {positionComment !== "" ? <CommentBox comment={positionComment} /> : null}
     </Dashboard>
   );
 };
