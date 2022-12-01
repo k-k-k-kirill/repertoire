@@ -8,7 +8,7 @@ import EditableTitle from "../../components/EditableTitle/EditableTitle";
 import ChessBoard from "../../components/Chess/ChessBoard/ChessBoard";
 import Dashboard from "../../components/Layouts/Dashboard/Dashboard";
 import History from "../../components/History/History";
-import { Card, Typography } from "antd";
+import { Card } from "antd";
 import {
   uiAddBranch,
   uiModifyBranch,
@@ -25,7 +25,6 @@ import ModeSwitch from "../../components/ModeSwitch/ModeSwitch";
 import CommentBox from "../../components/CommentBox/CommentBox";
 
 const Chess = require("chess.js");
-const { Title } = Typography;
 
 interface OpeningEditorStateProps {
   currentBranch: BranchType;
@@ -190,9 +189,7 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
             title={title}
             onChange={(e) => {
               const newTitle = (e.target as HTMLInputElement).value;
-              if (newTitle !== "") {
-                setTitle(newTitle);
-              }
+              setTitle(newTitle);
             }}
             onEditingComplete={() =>
               modifyCurrentBranch(ModifyActions.RenameBranch)
