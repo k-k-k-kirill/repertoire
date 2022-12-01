@@ -1,5 +1,5 @@
 import express, { Router, Request, Response } from "express";
-import { body, param } from "express-validator";
+import { body, param, check } from "express-validator";
 import validateRequest from "../helpers/validateRequest";
 import branchService from "../services/Branch";
 import requireAuth from "../middlewares/requireAuth";
@@ -32,12 +32,16 @@ branch.post(
   body("mainLine").isArray().optional({ nullable: true }),
   body("startPosition").isString().optional({ nullable: true }),
   body("endPosition").isString().optional({ nullable: true }),
+  body("comments").isArray().optional({ nullable: true }),
+  check("comments.*.position").isString().not().isEmpty(),
+  check("comments.*.comment").isString(),
   body("actionType")
     .isString()
     .isIn([
       ModifyActions.UndoMove,
       ModifyActions.AddMove,
       ModifyActions.RenameBranch,
+      ModifyActions.EditComments,
     ]),
   async (req: Request, res: Response) => {
     validateRequest(req);

@@ -8,7 +8,7 @@ import EditableTitle from "../../components/EditableTitle/EditableTitle";
 import ChessBoard from "../../components/Chess/ChessBoard/ChessBoard";
 import Dashboard from "../../components/Layouts/Dashboard/Dashboard";
 import History from "../../components/History/History";
-import { Card } from "antd";
+import { Card, Typography } from "antd";
 import {
   uiAddBranch,
   uiModifyBranch,
@@ -22,8 +22,10 @@ import { EditorLocationState } from "./types";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import { ModifyBranchActionPayload } from "../../redux/branches/types";
 import ModeSwitch from "../../components/ModeSwitch/ModeSwitch";
+import CommentBox from "../../components/CommentBox/CommentBox";
 
 const Chess = require("chess.js");
+const { Title } = Typography;
 
 interface OpeningEditorStateProps {
   currentBranch: BranchType;
@@ -65,6 +67,7 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
   const [position, setPosition] = useState<string | undefined>("start");
   const [boardEnabled, setBoardEnabled] = useState<boolean>(true);
   const [breadcrumbs, setBreadcrumbs] = useState<Breadcrumb[]>([]);
+  const [positionComment, setPositionComment] = useState<string>("");
 
   useEffect(() => {
     if (locationState && locationState.branchId) {
@@ -111,6 +114,16 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
       setPosition(startingPosition);
     }
   }, [currentBranch?._id]);
+
+  useEffect(() => {
+    if (currentBranch) {
+      const currentPositionComment = currentBranch.comments?.find(
+        (comment) => comment.position === position
+      )?.comment;
+
+      setPositionComment(currentPositionComment ?? "");
+    }
+  }, [position, currentBranch?.comments]);
 
   const populateMoves = (moves: string[]) => {
     moves.forEach((move) => chess.move(move));
@@ -207,6 +220,9 @@ const OpeningEditor: React.FC<OpeningEditorProps> = ({
             setBoardEnabled(boardEnabledState)
           }
         />
+        {positionComment !== "" ? (
+          <CommentBox comment={positionComment} />
+        ) : null}
       </div>
     </Dashboard>
   );

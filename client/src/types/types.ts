@@ -14,6 +14,12 @@ export interface Branch {
   endPosition?: string;
   parent?: string | null;
   owner?: string | null;
+  comments?: PositionComment[];
+}
+
+export interface PositionComment {
+  position: string;
+  comment: string;
 }
 
 export interface Breadcrumb {
@@ -25,4 +31,5 @@ export enum ModifyActions {
   UndoMove = "undoMove",
   AddMove = "addMove",
   RenameBranch = "renameBranch",
+  EditComments = "editComments",
 }

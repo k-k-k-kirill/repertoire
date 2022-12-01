@@ -16,4 +16,5 @@ export enum ModifyActions {
   UndoMove = "undoMove",
   AddMove = "addMove",
   RenameBranch = "renameBranch",
+  EditComments = "editComments",
 }

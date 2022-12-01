@@ -19,6 +19,7 @@ import { Branch, MoveData } from "../../types/types";
 import { Breadcrumb } from "../../types/types";
 import { getUpdatedBreadcrumbs } from "../../utils/getUpdatedBreadCrumbs";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
+import { uiSetNotification } from "../../redux/notification/slice";
 
 const Chess = require("chess.js");
 
@@ -149,11 +150,14 @@ const OpeningPractice: React.FC = () => {
         } else {
           makeMoveOnBoard(move);
           setBoardEnabled(false);
+          dispatch(uiSetNotification("Practice completed!"));
         }
       } else {
         makeMoveOnBoard(move);
         makeMoveAsOpponent(currentBranch?.mainLine[moveCounter.current]);
       }
+    } else {
+      dispatch(uiSetNotification("Wrong move!"));
     }
   };
 

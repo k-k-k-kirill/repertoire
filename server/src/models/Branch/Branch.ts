@@ -1,6 +1,17 @@
 import mongoose, { Schema } from "mongoose";
 import Branch from "./types";
 
+const CommentSchema = new Schema({
+  position: {
+    type: String,
+    required: true,
+  },
+  comment: {
+    type: String,
+    required: true,
+  },
+});
+
 export const BranchSchema: Schema<Branch> = new Schema(
   {
     title: {
@@ -17,6 +28,10 @@ export const BranchSchema: Schema<Branch> = new Schema(
     },
     endPosition: {
       type: String,
+      required: false,
+    },
+    comments: {
+      type: [CommentSchema],
       required: false,
     },
     //@ts-ignore

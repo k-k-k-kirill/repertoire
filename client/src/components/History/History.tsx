@@ -4,6 +4,7 @@ import "./History.scss";
 import { Card, Typography, Tooltip, Dropdown, Menu, Modal, Input } from "antd";
 import {
   CloseCircleOutlined,
+  CommentOutlined,
   BranchesOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
@@ -13,9 +14,10 @@ import {
   getChildrenForCurrentBranch,
   uiSetCurrentBranch,
   uiDeleteBranch,
+  uiModifyBranch,
 } from "../../redux/branches/slice";
 import { BranchState } from "../../redux/branches/types";
-import { Branch } from "../../types/types";
+import { Branch, ModifyActions, PositionComment } from "../../types/types";
 import withConfirmationDialog from "../../hoc/withConfirmationDialog";
 
 interface HistoryProps {
@@ -28,6 +30,7 @@ interface HistoryProps {
 }
 
 const { Title } = Typography;
+const { TextArea } = Input;
 
 const History: React.FC<HistoryProps> = ({
   history,
@@ -51,6 +54,9 @@ const History: React.FC<HistoryProps> = ({
 
   const [showUndoButton, setShowUndoButton] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [positionCommentModalVisible, setPositionCommentModalVisible] =
+    useState<boolean>(false);
+  const [positionComment, setPositionComment] = useState<string>("");
   const [newBranchName, setNewBranchName] = useState<string>("");
 
   useEffect(() => {
@@ -104,6 +110,36 @@ const History: React.FC<HistoryProps> = ({
     dispatch(uiSetCurrentBranch(branchId));
   };
 
+  const handlePositionCommentModalOpen = () => {
+    const previousComment = currentBranch.comments.find(
+      (comment: any) => comment.position === currentPositionFen
+    )?.comment;
+
+    setPositionComment(previousComment ?? "");
+    setPositionCommentModalVisible(true);
+  };
+
+  const handleSavePositionCommentClick = () => {
+    let updatedComments =
+      currentBranch?.comments.filter(
+        (comment: PositionComment) => comment.position !== currentPositionFen
+      ) || [];
+
+    updatedComments.push({
+      position: currentPositionFen,
+      comment: positionComment,
+    });
+
+    dispatch(
+      uiModifyBranch({
+        ...currentBranch,
+        actionType: ModifyActions.EditComments,
+        comments: updatedComments,
+      })
+    );
+    setPositionCommentModalVisible(false);
+  };
+
   return (
     <Card className="history">
       <Title level={5}>{title}</Title>
@@ -125,6 +161,10 @@ const History: React.FC<HistoryProps> = ({
                   <CloseCircleOutlined onClick={onUndo} />
                 </Tooltip>
               )}
+
+              <Tooltip placement="top" title="Move comment">
+                <CommentOutlined onClick={handlePositionCommentModalOpen} />
+              </Tooltip>
 
               <Tooltip placement="top" title="Branches">
                 <Dropdown
@@ -185,6 +225,20 @@ const History: React.FC<HistoryProps> = ({
               placeholder="Branch name"
               value={newBranchName}
               onChange={(e) => setNewBranchName(e.target.value)}
+            />
+          </Modal>
+
+          <Modal
+            centered
+            title="Edit move comment"
+            visible={positionCommentModalVisible}
+            onCancel={() => setPositionCommentModalVisible(false)}
+            onOk={handleSavePositionCommentClick}
+          >
+            <TextArea
+              placeholder="Comment"
+              value={positionComment}
+              onChange={(e) => setPositionComment(e.target.value)}
             />
           </Modal>
         </div>
