@@ -21,6 +21,7 @@ import { getUpdatedBreadcrumbs } from "../../utils/getUpdatedBreadCrumbs";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import { uiSetNotification } from "../../redux/notification/slice";
 import CommentBox from "../../components/CommentBox/CommentBox";
+import NonInteractiveHistory from "../../components/History/NonInteractiveHistory";
 
 const Chess = require("chess.js");
 
@@ -42,6 +43,7 @@ const OpeningPractice: React.FC = () => {
   const [boardEnabled, setBoardEnabled] = useState<boolean>(true);
   const [breadcrumbs, setBreadcrumbs] = useState<Breadcrumb[]>([]);
   const [positionComment, setPositionComment] = useState<string>("");
+  const [history, setHistory] = useState<string[]>([]);
 
   const moveCounter = useRef(0);
 
@@ -61,6 +63,7 @@ const OpeningPractice: React.FC = () => {
       selectedBranchId === currentBranch._id ? [] : breadcrumbs,
       currentBranch
     );
+
     setBreadcrumbs(updatedBreadcrumbs);
   }, [currentBranch?._id]);
 
@@ -176,6 +179,7 @@ const OpeningPractice: React.FC = () => {
   const updateBoard = () => {
     moveCounter.current++;
     setPosition(chess?.fen());
+    setHistory(chess?.history() || []);
   };
 
   return (
@@ -190,15 +194,19 @@ const OpeningPractice: React.FC = () => {
         items={breadcrumbs}
         currentBranchTitle={currentBranch?.title}
       />
-
-      <ChessBoard
-        allowDrag={() => {
-          return boardEnabled;
-        }}
-        onPieceDrop={onPieceDrop}
-        position={position}
-      />
-      {positionComment !== "" ? <CommentBox comment={positionComment} /> : null}
+      <div className="opening-editor__main">
+        <ChessBoard
+          allowDrag={() => {
+            return boardEnabled;
+          }}
+          onPieceDrop={onPieceDrop}
+          position={position}
+        />
+        <NonInteractiveHistory title="Main line" history={history} />
+        {positionComment !== "" ? (
+          <CommentBox comment={positionComment} />
+        ) : null}
+      </div>
     </Dashboard>
   );
 };

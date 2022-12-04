@@ -230,7 +230,7 @@ const History: React.FC<HistoryProps> = ({
 
           <Modal
             centered
-            title="Edit move comment"
+            title="Edit position comment"
             visible={positionCommentModalVisible}
             onCancel={() => setPositionCommentModalVisible(false)}
             onOk={handleSavePositionCommentClick}
